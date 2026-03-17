@@ -141,8 +141,8 @@
       "bookid": "BK00001",
       "borrowdate": "2026-03-03",
       "duedate": "2026-03-04",
-      "returndate": null,
-      "status": "borrowed"
+      "returndate": "2026-03-17",
+      "status": "returned"
     },
     {
       "transactionid": "TRN017",
@@ -463,6 +463,42 @@
       "transactionid": "TRN052",
       "userid": "USR001",
       "bookid": "BK01858",
+      "borrowdate": "2026-03-17",
+      "duedate": "2026-04-16",
+      "returndate": null,
+      "status": "borrowed"
+    },
+    {
+      "transactionid": "TRN053",
+      "userid": "USR001",
+      "bookid": "BK00001",
+      "borrowdate": "2026-03-17",
+      "duedate": "2026-04-16",
+      "returndate": null,
+      "status": "borrowed"
+    },
+    {
+      "transactionid": "TRN054",
+      "userid": "USR003",
+      "bookid": "BK00733",
+      "borrowdate": "2026-03-17",
+      "duedate": "2026-04-16",
+      "returndate": "2026-03-17",
+      "status": "returned"
+    },
+    {
+      "transactionid": "TRN055",
+      "userid": "USR003",
+      "bookid": "BK07008",
+      "borrowdate": "2026-03-17",
+      "duedate": "2026-04-16",
+      "returndate": null,
+      "status": "borrowed"
+    },
+    {
+      "transactionid": "TRN056",
+      "userid": "USR003",
+      "bookid": "BK00415",
       "borrowdate": "2026-03-17",
       "duedate": "2026-04-16",
       "returndate": null,

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Chatbot - AI Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <style>
+        .chatbot-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .chat-messages {
+            height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .user-message {
+            background: #007bff;
+            color: white;
+            text-align: right;
+        }
+        .bot-message {
+            background: #e9ecef;
+            color: #333;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .send-btn {
+            padding: 12px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .send-btn:hover {
+            background: #218838;
+        }
+        .suggestions {
+            margin-top: 10px;
+        }
+        .suggestion-btn {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .suggestion-btn:hover {
+            background: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <h1>🤖 Library AI Chatbot</h1>
+            </div>
+            <div class="navbar-right">
+                <button id="notificationBtn" class="btn-notification" title="Notifications">
+                    🔔 <span id="notificationCount" class="badge"></span>
+                </button>
+                <span id="userName" class="user-info"></span>
+                <a href="{{ url_for('home') }}" class="btn-logout">Back to Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="chatbot-container">
+        <div id="chatMessages" class="chat-messages">
+            <div class="message bot-message">
+                <div class="message-content">
+                    Hello! I'm your library assistant. I can help you:
+                    <br>• Search for books
+                    <br>• Borrow or return books
+                    <br>• Check your borrowing history
+                    <br>• Get recommendations
+                    <br><br>What would you like to do?
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Ask me anything about the library...">
+            <button id="sendBtn" class="send-btn">Send</button>
+        </div>
+
+        <div id="suggestions" class="suggestions"></div>
+    </div>
+
+    <!-- Loading spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // Set user data from template
+        localStorage.setItem('userid', '{{ userid }}');
+        localStorage.setItem('username', '{{ username }}');
+        localStorage.setItem('fullname', '{{ fullname }}');
+    </script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+</body>
+</html>

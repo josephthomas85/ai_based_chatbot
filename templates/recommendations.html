@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Recommendations - Library</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <style>
+        .recommendations-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .recommendation-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .book-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .book-author {
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .book-details {
+            color: #888;
+            font-size: 14px;
+        }
+        .borrow-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .borrow-btn:hover {
+            background: #218838;
+        }
+        .borrow-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <h1>🤖 AI Recommendations</h1>
+            </div>
+            <div class="navbar-right">
+                <button id="notificationBtn" class="btn-notification" title="Notifications">
+                    🔔 <span id="notificationCount" class="badge"></span>
+                </button>
+                <span id="userName" class="user-info"></span>
+                <a href="{{ url_for('home') }}" class="btn-logout">Back to Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="recommendations-container">
+        <h2>Books Recommended for You</h2>
+        <p>Based on your reading history and preferences, here are some books you might enjoy:</p>
+
+        <div id="recommendationsGrid" class="recommendations-grid">
+            <div class="loading">Loading recommendations...</div>
+        </div>
+    </div>
+
+    <!-- Loading spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // Set user data from template
+        localStorage.setItem('userid', '{{ userid }}');
+        localStorage.setItem('username', '{{ username }}');
+        localStorage.setItem('fullname', '{{ fullname }}');
+    </script>
+    <script src="{{ url_for('static', filename='js/recommendations.js') }}"></script>
+</body>
+</html>

@@ -88,29 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     modalAction.addEventListener('click', confirmModalAction);
 
-    // sidebar nav links (dashboard/chat toggle)
+    // sidebar nav links - now redirect to separate pages
     document.querySelectorAll('.sidebar-nav a').forEach(link => {
         link.addEventListener('click', (e) => {
             const href = e.currentTarget.getAttribute('href');
             if (href === '#') {
                 e.preventDefault();
-            }
-            document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
-            e.currentTarget.classList.add('active');
-            const text = e.currentTarget.textContent.trim().toLowerCase();
-            // hide all views
-            ['dashboardView','chatView','myBooksView','aiView'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.style.display = 'none';
-            });
-            if (text.includes('dashboard')) {
-                document.getElementById('dashboardView').style.display = '';
-            } else if (text.includes('chatbot')) {
-                document.getElementById('chatView').style.display = '';
-            } else if (text.includes('my books')) {
-                showMyBooksView();
-            } else if (text.includes('recommendations')) {
-                showAIRecommendations();
+                // This should not happen anymore since we updated the links
             }
         });
     });

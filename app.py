@@ -103,7 +103,29 @@ def overdue_page():
         return redirect(url_for('login'))
     return render_template('overdue.html')
 
-# Error Handlers
+
+@app.route('/chatbot', methods=['GET'])
+def chatbot_page():
+    """Render library chatbot page"""
+    if 'userid' not in session:
+        return redirect(url_for('login'))
+    return render_template('chatbot.html')
+
+
+@app.route('/recommendations', methods=['GET'])
+def recommendations_page():
+    """Render AI recommendations page"""
+    if 'userid' not in session:
+        return redirect(url_for('login'))
+    return render_template('recommendations.html')
+
+
+@app.route('/mybooks', methods=['GET'])
+def mybooks_page():
+    """Render user's borrowed books page"""
+    if 'userid' not in session:
+        return redirect(url_for('login'))
+    return render_template('mybooks.html')
 @app.errorhandler(404)
 def not_found(error):
     return {'success': False, 'message': 'Resource not found'}, 404
@@ -146,6 +168,6 @@ if __name__ == '__main__':
     app.run(
         debug=Config.DEBUG,
         host='0.0.0.0',
-        port=5000,
+        port=5002,
         threaded=True
     )

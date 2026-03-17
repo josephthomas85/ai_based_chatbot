@@ -13,9 +13,9 @@
                 <h1>📚 Library Management System</h1>
             </div>
             <div class="navbar-right">
-                <button id="notificationBtn" class="btn-notification" title="Notifications">
+                <a href="{{ url_for('notifications_page') }}" class="btn-notification" title="Notifications">
                     🔔 <span id="notificationCount" class="badge"></span>
-                </button>
+                </a>
                 <span id="userName" class="user-info"></span>
                 <button id="logoutBtn" class="btn-logout">Logout</button>
             </div>
@@ -31,9 +31,9 @@
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="#" class="active"><span class="icon">🏠</span>Dashboard</a></li>
-                    <li><a href="#"><span class="icon">🤖</span>AI Recommendations</a></li>
-                    <li><a href="#"><span class="icon">💬</span>Library Chatbot</a></li>
-                    <li><a href="#"><span class="icon">📚</span>My Books</a></li>
+                    <li><a href="{{ url_for('recommendations_page') }}"><span class="icon">🤖</span>AI Recommendations</a></li>
+                    <li><a href="{{ url_for('chatbot_page') }}"><span class="icon">💬</span>Library Chatbot</a></li>
+                    <li><a href="{{ url_for('mybooks_page') }}"><span class="icon">📚</span>My Books</a></li>
                     <li><a href="{{ url_for('history') }}"><span class="icon">📜</span>History</a></li>
                 </ul>
             </nav>
@@ -43,7 +43,7 @@
                     {{ fullname }}<br>
                     <small>{{ username }}</small>
                 </div>
-                <button id="logoutBtn" class="btn-logout">Logout</button>
+                <button id="sidebarLogoutBtn" class="btn-logout">Logout</button>
             </div>
         </aside>
         

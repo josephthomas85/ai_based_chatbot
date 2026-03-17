@@ -8,6 +8,33 @@
       "email": "",
       "registereddate": "2026-03-17",
       "borrowedbooks": []
+    },
+    {
+      "userid": "USR002",
+      "username": "joss",
+      "password": "$2b$12$s/obJhYh9cO/B/qbgJuLD.5DX7fseJ1Fbbf8h.pphJh/s9RDqrlbu",
+      "fullname": "jozu",
+      "email": "",
+      "registereddate": "2026-03-17",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR003",
+      "username": "jozu",
+      "password": "$2b$12$BGgrLe5Woohtrxmi8K53zeWEFwWabn.trmuU1qitEBdbIbehbM8D6",
+      "fullname": "joseph",
+      "email": "",
+      "registereddate": "2026-03-17",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR004",
+      "username": "testuser888",
+      "password": "$2b$12$07GzQAMgA.uwm/ADZjuPZOsTQbKshC5Po7dXIgPrOA.2ankC4pBhq",
+      "fullname": "Test User",
+      "email": "",
+      "registereddate": "",
+      "borrowedbooks": []
     }
   ]
 }
