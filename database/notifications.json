@@ -1,0 +1,33 @@
+{
+  "notifications": [
+    {
+      "id": "NTF001",
+      "userid": "USR001",
+      "message": "Good news! 'Ultimate Blockchain' is back in stock.",
+      "read": true,
+      "timestamp": "2026-03-03T01:17:22.931746"
+    }
+  ],
+  "watchers": [
+    {
+      "userid": "USR001",
+      "bookid": "BK00005",
+      "requested_on": "2026-03-03T01:34:09.086731"
+    },
+    {
+      "userid": "USR002",
+      "bookid": "BK07009",
+      "requested_on": "2026-03-03T01:56:36.147032"
+    },
+    {
+      "userid": "USR001",
+      "bookid": "BK07009",
+      "requested_on": "2026-03-03T09:23:25.633250"
+    },
+    {
+      "userid": "USR001",
+      "bookid": "BK07029",
+      "requested_on": "2026-03-03T09:27:12.559706"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "users": [
+    {
+      "userid": "USR001",
+      "username": "arjun",
+      "password": "$2b$12$8DHhRujghS/o4WC.V0yAnultRZSkrZjcI1nrP.gzLZ7PaffuzNUsG",
+      "fullname": "ARJUN R",
+      "email": "",
+      "registereddate": "2026-03-17",
+      "borrowedbooks": []
+    }
+  ]
+}
