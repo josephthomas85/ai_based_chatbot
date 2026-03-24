@@ -592,10 +592,87 @@ def chat():
         else:
             response_data["response"] = "Sorry, no books are currently available for recommendation."
             response_data["suggestions"] = ["Show all books"]
-    
+
+    elif intent == "help":
+        response_data["response"] = (
+            f"Here's everything I can help you with, {username}:\n\n"
+            "• **Show all books** — Browse the full library catalogue\n"
+            "• **Search [title/author]** — Find a specific book\n"
+            "• **Borrow [title]** — Borrow a book from the library\n"
+            "• **Return [title]** — Return a book you've borrowed\n"
+            "• **My books** — See your active loans\n"
+            "• **Recommend books** — Get personalised reading suggestions\n"
+            "• **History** — View your past borrowing history\n"
+            "• **Overdue** — Check if you have any overdue books"
+        )
+        response_data["suggestions"] = ["Show all books", "Borrow a book", "My books", "Recommend books"]
+
+    elif intent == "history":
+        # Show full borrow history (returned + current)
+        transactions_data = load_transactions()
+        user_history = []
+        for transaction in transactions_data['transactions']:
+            if transaction['userid'] == userid and transaction['status'] in ['borrowed', 'returned', 'requested']:
+                for book in books_data['books']:
+                    if book['bookid'] == transaction['bookid']:
+                        user_history.append({
+                            'bookid': book['bookid'],
+                            'title': book['title'],
+                            'author': book['author'],
+                            'status': transaction['status'],
+                            'borrowdate': transaction.get('borrowdate', ''),
+                            'returndate': transaction.get('returndate', None),
+                            'duedate': transaction.get('duedate', '')
+                        })
+                        break
+        if user_history:
+            response_data["response"] = f"Your borrowing history ({len(user_history)} record{'s' if len(user_history) != 1 else ''}):"
+            response_data["data"] = [
+                {
+                    "title": h['title'],
+                    "author": h['author'],
+                    "status": h['status'],
+                    "duedate": h['returndate'] if h['returndate'] else h['duedate']
+                }
+                for h in user_history
+            ]
+        else:
+            response_data["response"] = "You haven't borrowed any books yet. Ready to start reading?"
+        response_data["suggestions"] = ["Borrow a book", "Show all books", "Recommend books"]
+
+    elif intent == "overdue":
+        transactions_data = load_transactions()
+        today = datetime.now().strftime('%Y-%m-%d')
+        overdue_books = []
+        for transaction in transactions_data['transactions']:
+            if transaction['userid'] == userid and transaction['status'] == 'borrowed':
+                if transaction.get('duedate', '9999') < today:
+                    for book in books_data['books']:
+                        if book['bookid'] == transaction['bookid']:
+                            overdue_books.append({
+                                'bookid': book['bookid'],
+                                'title': book['title'],
+                                'author': book['author'],
+                                'duedate': transaction['duedate']
+                            })
+                            break
+        if overdue_books:
+            response_data["response"] = f"You have {len(overdue_books)} overdue book(s). Please return them as soon as possible:"
+            response_data["data"] = [
+                {"title": b['title'], "author": b['author'], "duedate": b['duedate']}
+                for b in overdue_books
+            ]
+            response_data["suggestions"] = ["Return a book", "My books"]
+        else:
+            response_data["response"] = "Great news! You have no overdue books."
+            response_data["suggestions"] = ["My books", "Borrow a book"]
+
     else:
-        response_data["response"] = "I'm sorry, I didn't understand that. I can help you with:\n• 'Show all books'\n• 'Borrow [book name]'\n• 'Search [book name]'\n• 'Return a book'\n• 'Check book status'\n• 'My books'\n• 'Recommend books'"
-        response_data["suggestions"] = ["Show all books", "Borrow a book", "Search a book", "My books", "Recommend books"]
+        # Friendly fallback
+        response_data["response"] = (
+            f"I'm not sure I understood that, {username}. Here are some things I can help you with:"
+        )
+        response_data["suggestions"] = ["Show all books", "Borrow a book", "Search a book", "My books", "Recommend books", "Help"]
     
     return jsonify(response_data), 200
 
@@ -603,4 +680,3 @@ def chat():
 from api import api_bp
 
 api_bp.add_url_rule('/chat', 'chat', chat, methods=['POST'])
-

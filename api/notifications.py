@@ -2,7 +2,7 @@ import json
 from flask import request, jsonify, session
 from datetime import datetime, timedelta
 from config import Config
-from api.auth import require_login
+from api.auth import require_login, load_users
 
 # Notification data helpers
 
@@ -32,6 +32,24 @@ def add_notification(userid, message):
     })
     save_notifications(data)
     return nid
+
+
+def notify_staff(message):
+    """Add a notification for all staff members."""
+    users_data = load_users()
+    staff_ids = [u['userid'] for u in users_data['users'] if u.get('role') == 'staff']
+    
+    data = load_notifications()
+    for sid in staff_ids:
+        nid = f"NTF{str(len(data['notifications']) + 1).zfill(3)}"
+        data['notifications'].append({
+            "id": nid,
+            "userid": sid,
+            "message": message,
+            "read": False,
+            "timestamp": datetime.now().isoformat()
+        })
+    save_notifications(data)
 
 
 def add_watcher(userid, bookid):

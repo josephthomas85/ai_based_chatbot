@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Overdue Books</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
     <style>
         * {
@@ -26,14 +27,14 @@
             display: flex;
             flex-direction: column;
             flex: 1;
-            background: #f5f7fa;
+            background: #f6f6f6;
             min-height: calc(100vh - 60px);
         }
 
         .overdue-header {
             padding: 30px;
             text-align: center;
-            background: linear-gradient(135deg, #2980b9 0%, #fcfcfc 100%);
+            background: linear-gradient(135deg, #6b6b6b 0%, #fcfcfc 100%);
             color: rgb(21, 95, 213);
         }
 
@@ -75,7 +76,7 @@
         }
 
         .overdue-table thead {
-            background: #454f7c;
+            background: #505050;
             color: white;
         }
 
@@ -84,7 +85,7 @@
             text-align: left;
             font-weight: 600;
             letter-spacing: 0.5px;
-            background: #454f7c;
+            background: #505050;
             border-bottom: 2px solid #2c3e50;
         }
 
@@ -94,7 +95,7 @@
         }
 
         .overdue-table tbody tr:hover {
-            background-color: #f8f9fa;
+            background-color: #f8f8f8;
         }
 
         .overdue-table td {
@@ -104,11 +105,11 @@
 
         .overdue-table td.title {
             font-weight: 600;
-            color: #2c3e50;
+            color: #3a3a3a;
         }
 
         .overdue-table td.author {
-            color: #7f8c8d;
+            color: #888888;
             font-size: 13px;
         }
 
@@ -118,20 +119,20 @@
             border-radius: 12px;
             font-size: 12px;
             font-weight: 600;
-            background: #454f7c;
-            background-color: ;
+            background: #505050;
+            background-color: #505050;
             color: white;
         }
 
         .fine-amount {
             font-weight: bold;
-            color: #b20000;
+            color: #353535;
         }
 
         .no-data {
             text-align: center;
             padding: 60px 20px;
-            color: #7f8c8d;
+            color: #888888;
         }
 
         .no-data-icon {
@@ -149,7 +150,7 @@
         .btn-action {
             display: inline-block;
             padding: 10px 20px;
-            background: #3498db;
+            background: #818181;
             color: white;
             border: none;
             border-radius: 6px;
@@ -159,7 +160,7 @@
         }
 
         .btn-action:hover {
-            background: #2980b9;
+            background: #6b6b6b;
             transform: translateY(-2px);
         }
     </style>
@@ -168,12 +169,12 @@
     <header class="navbar">
         <div class="navbar-container">
             <div class="navbar-brand">
-                <h1>📚 Library Management System</h1>
+                <h1><i data-lucide="library"></i> Library Management System</h1>
             </div>
             <div class="navbar-right">
-                <button id="notificationBtn" class="btn-notification" title="Notifications">
-                    🔔 <span id="notificationCount" class="badge"></span>
-                </button>
+                <a href="{{ url_for('notifications_page') }}" id="notificationBtn" class="btn-notification" title="Notifications">
+                    <i data-lucide="bell"></i> <span id="notificationCount" class="badge"></span>
+                </a>
                 <span id="userName" class="user-info"></span>
                 <button id="logoutBtn" class="btn-logout">Logout</button>
             </div>
@@ -182,14 +183,14 @@
 
     <div class="overdue-page" data-userid="{{ userid }}" data-fullname="{{ fullname }}">
         <div class="overdue-header">
-            <h2>⚠️ Overdue Books</h2>
+            <h2><i data-lucide="alert-circle"></i> Overdue Books</h2>
             <p>Books that are past their due date</p>
         </div>
 
         <div class="overdue-content">
             <div id="overdueContainer">
                 <div class="no-data">
-                    <div class="no-data-icon">⏳</div>
+                    <div class="no-data-icon"><i data-lucide="loader" class="animate-spin"></i></div>
                     <p>Loading...</p>
                 </div>
             </div>
@@ -201,5 +202,11 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/overdue.js') }}"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

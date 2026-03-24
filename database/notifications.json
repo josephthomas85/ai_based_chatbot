@@ -6,6 +6,69 @@
       "message": "Good news! 'Ultimate Blockchain' is back in stock.",
       "read": true,
       "timestamp": "2026-03-03T01:17:22.931746"
+    },
+    {
+      "id": "NTF002",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'The Art of Flask' by user USR001",
+      "read": true,
+      "timestamp": "2026-03-21T13:05:30.514171"
+    },
+    {
+      "id": "NTF003",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'The Art of Flask' by user USR002",
+      "read": true,
+      "timestamp": "2026-03-21T13:05:30.526698"
+    },
+    {
+      "id": "NTF004",
+      "userid": "USR001",
+      "message": "Your request for 'The Art of Flask' has been approved! It's due on 2026-04-20.",
+      "read": false,
+      "timestamp": "2026-03-21T13:05:30.538120"
+    },
+    {
+      "id": "NTF005",
+      "userid": "USR002",
+      "message": "Good news! 'The Art of Flask' is now available for you. The librarian will approve it shortly.",
+      "read": false,
+      "timestamp": "2026-03-21T13:05:30.542707"
+    },
+    {
+      "id": "NTF006",
+      "userid": "USR020_STAFF",
+      "message": "FIFO Alert: 'The Art of Flask' is now reserved for queued user USR002. Please approve.",
+      "read": true,
+      "timestamp": "2026-03-21T13:05:30.542974"
+    },
+    {
+      "id": "NTF007",
+      "userid": "USR002",
+      "message": "Your request for 'The Art of Flask' has been approved! It's due on 2026-04-20.",
+      "read": false,
+      "timestamp": "2026-03-21T13:28:19.142069"
+    },
+    {
+      "id": "NTF008",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Mastering Svelte' by user USR027",
+      "read": false,
+      "timestamp": "2026-03-23T12:44:47.196793"
+    },
+    {
+      "id": "NTF009",
+      "userid": "USR027",
+      "message": "Your request for 'Mastering Svelte' has been APPROVED! Please collect the book from the library by 2026-03-24. Your request will be automatically cancelled if not collected by this date.",
+      "read": true,
+      "timestamp": "2026-03-23T12:45:37.884892"
+    },
+    {
+      "id": "NTF010",
+      "userid": "USR027",
+      "message": "Your request for 'Mastering Svelte' was declined.",
+      "read": true,
+      "timestamp": "2026-03-23T12:45:57.702370"
     }
   ],
   "watchers": [
@@ -28,6 +91,11 @@
       "userid": "USR001",
       "bookid": "BK07029",
       "requested_on": "2026-03-03T09:27:12.559706"
+    },
+    {
+      "userid": "USR023",
+      "bookid": "BK00021",
+      "requested_on": "2026-03-21T11:46:03.112534"
     }
   ]
 }

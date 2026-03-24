@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
     <style>
         .notifications-page {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            background: #f5f7fa;
+            background: #f6f6f6;
         }
 
         .notif-header {
             padding: 30px;
             text-align: center;
-            background: linear-gradient(135deg, #2980b9  0%, #2980b9 100%);
+            background: linear-gradient(135deg, #6b6b6b  0%, #6b6b6b 100%);
             color: white;
         }
 
@@ -71,19 +72,19 @@
         }
 
         .notif-item.unread {
-            background: #ecf9ff;
-            border-left-color: #3498db;
+            background: #f5f5f5;
+            border-left-color: #818181;
             font-weight: 500;
         }
 
         .notif-item.read {
             opacity: 0.8;
-            border-left-color: #95a5a6;
+            border-left-color: #a0a0a0;
         }
 
         .notif-badge {
             display: inline-block;
-            background: #3498db;
+            background: #818181;
             color: white;
             font-size: 11px;
             font-weight: 700;
@@ -94,15 +95,15 @@
         }
 
         .notif-badge.unread {
-            background: #e74c3c;
+            background: #787878;
         }
 
         .notif-badge.read {
-            background: #95a5a6;
+            background: #a0a0a0;
         }
 
         .notif-message {
-            color: #2c3e50;
+            color: #3a3a3a;
             font-size: 15px;
             line-height: 1.5;
             margin-bottom: 8px;
@@ -110,7 +111,7 @@
 
         .notif-time {
             font-size: 12px;
-            color: #7f8c8d;
+            color: #888888;
         }
 
         .notif-icon {
@@ -123,7 +124,7 @@
         .no-data {
             text-align: center;
             padding: 80px 20px;
-            color: #7f8c8d;
+            color: #888888;
         }
 
         .no-data-icon {
@@ -134,7 +135,7 @@
         .no-data h3 {
             font-size: 20px;
             margin: 15px 0 10px 0;
-            color: #2c3e50;
+            color: #3a3a3a;
         }
 
         .notif-footer {
@@ -147,7 +148,7 @@
         .btn-action {
             display: inline-block;
             padding: 10px 20px;
-            background: #3498db;
+            background: #818181;
             color: white;
             border: none;
             border-radius: 6px;
@@ -157,19 +158,19 @@
         }
 
         .btn-action:hover {
-            background: #2980b9;
+            background: #6b6b6b;
             transform: translateY(-2px);
         }
 
         .mark-read-btn {
-            background: #27ae60;
+            background: #7c7c7c;
             padding: 8px 16px;
             font-size: 13px;
             margin-left: 10px;
         }
 
         .mark-read-btn:hover {
-            background: #229954;
+            background: #6d6d6d;
         }
 
         .notif-stats {
@@ -189,7 +190,7 @@
 
         .stat-count {
             font-weight: 700;
-            color: #3498db;
+            color: #818181;
             font-size: 18px;
         }
     </style>
@@ -198,12 +199,12 @@
     <header class="navbar">
         <div class="navbar-container">
             <div class="navbar-brand">
-                <h1>📚 Library Management System</h1>
+                <h1><i data-lucide="library"></i> Library Management System</h1>
             </div>
             <div class="navbar-right">
-                <button id="notificationBtn" class="btn-notification" title="Notifications">
-                    🔔 <span id="notificationCount" class="badge"></span>
-                </button>
+                <a href="{{ url_for('notifications_page') }}" id="notificationBtn" class="btn-notification" title="Notifications">
+                    <i data-lucide="bell"></i> <span id="notificationCount" class="badge"></span>
+                </a>
                 <span id="userName" class="user-info"></span>
                 <button id="logoutBtn" class="btn-logout">Logout</button>
             </div>
@@ -212,7 +213,7 @@
 
     <div class="notifications-page" data-userid="{{ userid }}" data-fullname="{{ fullname }}">
         <div class="notif-header">
-            <h2>🔔 Your Notifications</h2>
+            <h2><i data-lucide="bell"></i> Your Notifications</h2>
             <p>Stay updated with your library activities</p>
         </div>
 
@@ -230,7 +231,7 @@
                 </div>
                 <div id="notificationsList">
                     <div class="no-data">
-                        <div class="no-data-icon">⏳</div>
+                        <div class="no-data-icon"><i data-lucide="loader" class="animate-spin"></i></div>
                         <p>Loading notifications...</p>
                     </div>
                 </div>
@@ -238,10 +239,16 @@
         </div>
 
         <div class="notif-footer">
-            <button id="backHome" class="btn-action">← Back to Home</button>
+            <button id="backHome" class="btn-action"><i data-lucide="arrow-left" style="width:16px; height:16px; vertical-align:middle;"></i> Back to Home</button>
         </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

@@ -7,6 +7,7 @@ from flask import Flask, render_template, redirect, url_for, session, request
 from flask_cors import CORS
 from config import Config
 from api import api_bp
+from api.staff import staff_bp
 from api.books import load_books, load_transactions, save_books
 import os
 
@@ -56,14 +57,33 @@ def validate_book_availability():
 
 # Register blueprints
 app.register_blueprint(api_bp)
+app.register_blueprint(staff_bp)
+
+# Staff Routes
+@app.route('/staff', methods=['GET'])
+def staff_login_page():
+    if 'staff_id' in session:
+        return redirect(url_for('staff_dashboard_page'))
+    return render_template('staff_login.html')
+
+@app.route('/staff/dashboard', methods=['GET'])
+def staff_dashboard_page():
+    if 'staff_id' not in session:
+        return redirect(url_for('staff_login_page'))
+    return render_template('staff_dashboard.html')
+
+@app.route('/staff/book/<bookid>', methods=['GET'])
+def staff_book_details_page(bookid):
+    if 'staff_id' not in session:
+        return redirect(url_for('staff_login_page'))
+    return render_template('staff_book_details.html', bookid=bookid)
 
 # Routes
 @app.route('/')
 def index():
-    """Redirect to home if logged in, otherwise to login"""
-    if 'userid' in session:
-        return redirect(url_for('home'))
-    return redirect(url_for('login'))
+    """Public landing page"""
+    userid = session.get('userid')
+    return render_template('landing.html', userid=userid)
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -78,6 +98,13 @@ def home():
     if 'userid' not in session:
         return redirect(url_for('login'))
     return render_template('home.html')
+
+@app.route('/profile', methods=['GET'])
+def profile_page():
+    """Render user profile management page"""
+    if 'userid' not in session:
+        return redirect(url_for('login'))
+    return render_template('profile.html')
 
 
 @app.route('/history', methods=['GET'])

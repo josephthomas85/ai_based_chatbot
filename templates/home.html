@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Management - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 </head>
 <body>
     <header class="navbar">
         <div class="navbar-container">
             <div class="navbar-brand">
-                <h1>📚 Library Management System</h1>
+                <h1><i data-lucide="library"></i> Library Management System</h1>
             </div>
             <div class="navbar-right">
                 <a href="{{ url_for('notifications_page') }}" class="btn-notification" title="Notifications">
-                    🔔 <span id="notificationCount" class="badge"></span>
+                    <i data-lucide="bell"></i> <span id="notificationCount" class="badge"></span>
                 </a>
                 <span id="userName" class="user-info"></span>
                 <button id="logoutBtn" class="btn-logout">Logout</button>
@@ -30,11 +31,13 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="#" class="active"><span class="icon">🏠</span>Dashboard</a></li>
-                    <li><a href="{{ url_for('recommendations_page') }}"><span class="icon">🤖</span>AI Recommendations</a></li>
-                    <li><a href="{{ url_for('chatbot_page') }}"><span class="icon">💬</span>Library Chatbot</a></li>
-                    <li><a href="{{ url_for('mybooks_page') }}"><span class="icon">📚</span>My Books</a></li>
-                    <li><a href="{{ url_for('history') }}"><span class="icon">📜</span>History</a></li>
+                    <li><a href="#" class="active"><i data-lucide="layout-dashboard" class="icon"></i>Dashboard</a></li>
+                    <li><a href="{{ url_for('recommendations_page') }}"><i data-lucide="sparkles" class="icon"></i>AI Recommendations</a></li>
+                    <li><a href="{{ url_for('chatbot_page') }}"><i data-lucide="message-square" class="icon"></i>Library Chatbot</a></li>
+                    <li><a href="{{ url_for('mybooks_page') }}"><i data-lucide="book-open" class="icon"></i>My Books</a></li>
+                    <li><a href="{{ url_for('history') }}"><i data-lucide="history" class="icon"></i>History</a></li>
+                
+                    <li><a href="{{ url_for('profile_page') }}"><i data-lucide="user" class="icon"></i>My Profile</a></li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -56,7 +59,7 @@
                 </div>
                 <section class="dashboard-cards">
                 <div class="card">
-                    <div class="card-icon">📖</div>
+                    <div class="card-icon"><i data-lucide="book-open"></i></div>
                     <div class="card-info">
                         <h3 id="cardBooksIssued">0</h3>
                         <p>Books Issued</p>
@@ -64,7 +67,7 @@
                     </div>
                 </div>
                 <div class="card" onclick="window.location.href='/overdue'" style="cursor: pointer;">
-                    <div class="card-icon">📅</div>
+                    <div class="card-icon"><i data-lucide="calendar-off"></i></div>
                     <div class="card-info">
                         <h3 id="cardOverdue">0</h3>
                         <p>Overdue Books</p>
@@ -72,7 +75,7 @@
                     </div>
                 </div>
                 <div class="card" id="feeCard" style="cursor: pointer;">
-                    <div class="card-icon">💰</div>
+                    <div class="card-icon"><i data-lucide="credit-card"></i></div>
                     <div class="card-info">
                         <h3 id="cardFees">₹0</h3>
                         <p>Current Late Fee</p>
@@ -80,7 +83,7 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-icon">🔔</div>
+                    <div class="card-icon"><i data-lucide="bell"></i></div>
                     <div class="card-info">
                         <h3 id="cardAlerts">0</h3>
                         <p>Unread Alerts</p>
@@ -107,12 +110,12 @@
             <!-- chat view hidden by default -->
             <div id="chatView" style="display:none;">
                 <div class="chat-header">
-                    <h2>🤖 Library Assistant</h2>
+                    <h2><i data-lucide="bot"></i> Library Assistant</h2>
                     <p class="chat-subtitle">Ask me about books, borrowing, or anything library related</p>
                 </div>
                 <div id="chatMessages" class="chat-messages">
                     <div class="message bot-message">
-                        <p>👋 Hello! I'm your Library Assistant. I can help you:</p>
+                        <p><i data-lucide="smile"></i> Hello! I'm your Library Assistant. I can help you:</p>
                         <ul>
                             <li>Search for books</li>
                             <li>Check book availability</li>
@@ -172,8 +175,9 @@
             <div id="feeDetails">
                 <p>Loading details...</p>
             </div>
-            <div style="margin-top: 16px; text-align: right;">
-                <button id="feeModalCloseBtn" class="btn-action" style="background: #e74c3c;">Close</button>
+            <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button id="feeModalPayBtn" class="btn-action" style="background: #7c7c7c; display: none;">Pay Fines</button>
+                <button id="feeModalCloseBtn" class="btn-action" style="background: #787878;">Close</button>
             </div>
         </div>
     </div>
@@ -183,6 +187,12 @@
         <div class="spinner"></div>
     </div>
     
-    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/home.js') }}?v=4"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

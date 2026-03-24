@@ -8,7 +8,7 @@
       "category": "System Design",
       "publicationyear": 2018,
       "totalcopies": 5,
-      "availablecopies": 4,
+      "availablecopies": 3,
       "status": "available",
       "location": "Shelf E-06"
     },
@@ -20,7 +20,7 @@
       "category": "API Design",
       "publicationyear": 2021,
       "totalcopies": 8,
-      "availablecopies": 8,
+      "availablecopies": 7,
       "status": "available",
       "location": "Shelf R-19"
     },
@@ -32,7 +32,7 @@
       "category": "Microservices",
       "publicationyear": 2022,
       "totalcopies": 5,
-      "availablecopies": 5,
+      "availablecopies": 4,
       "status": "available",
       "location": "Shelf U-23"
     },
@@ -44,7 +44,7 @@
       "category": "AI/ML",
       "publicationyear": 2023,
       "totalcopies": 6,
-      "availablecopies": 6,
+      "availablecopies": 4,
       "status": "available",
       "location": "Shelf H-26"
     },
@@ -200,8 +200,8 @@
       "category": "Software Architecture",
       "publicationyear": 2021,
       "totalcopies": 1,
-      "availablecopies": 1,
-      "status": "available",
+      "availablecopies": -1,
+      "status": "unavailable",
       "location": "Shelf R-20"
     },
     {
@@ -248,8 +248,8 @@
       "category": "Operating Systems",
       "publicationyear": 2021,
       "totalcopies": 1,
-      "availablecopies": 1,
-      "status": "available",
+      "availablecopies": 0,
+      "status": "unavailable",
       "location": "Shelf N-15"
     },
     {
@@ -788,8 +788,8 @@
       "category": "API Design",
       "publicationyear": 2022,
       "totalcopies": 1,
-      "availablecopies": 1,
-      "status": "available",
+      "availablecopies": 0,
+      "status": "unavailable",
       "location": "Shelf I-28"
     },
     {
@@ -1280,7 +1280,7 @@
       "category": "Embedded Systems",
       "publicationyear": 2020,
       "totalcopies": 6,
-      "availablecopies": 6,
+      "availablecopies": 5,
       "status": "available",
       "location": "Shelf C-06"
     },
@@ -3284,7 +3284,7 @@
       "category": "Cloud Computing",
       "publicationyear": 2020,
       "totalcopies": 8,
-      "availablecopies": 8,
+      "availablecopies": 7,
       "status": "available",
       "location": "Shelf K-05"
     },
@@ -3704,7 +3704,7 @@
       "category": "Networking",
       "publicationyear": 2023,
       "totalcopies": 3,
-      "availablecopies": 3,
+      "availablecopies": 2,
       "status": "available",
       "location": "Shelf L-25"
     },
@@ -3920,7 +3920,7 @@
       "category": "Operating Systems",
       "publicationyear": 2011,
       "totalcopies": 3,
-      "availablecopies": 2,
+      "availablecopies": 3,
       "status": "available",
       "location": "Shelf J-15"
     },
@@ -4460,7 +4460,7 @@
       "category": "Cloud Computing",
       "publicationyear": 2021,
       "totalcopies": 4,
-      "availablecopies": 4,
+      "availablecopies": 3,
       "status": "available",
       "location": "Shelf X-24"
     },
@@ -4724,7 +4724,7 @@
       "category": "API Design",
       "publicationyear": 2022,
       "totalcopies": 9,
-      "availablecopies": 9,
+      "availablecopies": 8,
       "status": "available",
       "location": "Shelf A-14"
     },
@@ -5132,7 +5132,7 @@
       "category": "Database",
       "publicationyear": 2012,
       "totalcopies": 2,
-      "availablecopies": 2,
+      "availablecopies": 1,
       "status": "available",
       "location": "Shelf S-06"
     },
@@ -5192,7 +5192,7 @@
       "category": "System Design",
       "publicationyear": 2023,
       "totalcopies": 8,
-      "availablecopies": 8,
+      "availablecopies": 7,
       "status": "available",
       "location": "Shelf O-02"
     },
@@ -6068,7 +6068,7 @@
       "category": "Microservices",
       "publicationyear": 2024,
       "totalcopies": 8,
-      "availablecopies": 8,
+      "availablecopies": 7,
       "status": "available",
       "location": "Shelf K-05"
     },
@@ -7448,7 +7448,7 @@
       "category": "Design Patterns",
       "publicationyear": 2020,
       "totalcopies": 8,
-      "availablecopies": 8,
+      "availablecopies": 7,
       "status": "available",
       "location": "Shelf U-26"
     },
@@ -7544,7 +7544,7 @@
       "category": "Refactoring",
       "publicationyear": 2020,
       "totalcopies": 4,
-      "availablecopies": 4,
+      "availablecopies": 3,
       "status": "available",
       "location": "Shelf Q-08"
     },
@@ -9440,7 +9440,7 @@
       "category": "Mobile Development",
       "publicationyear": 2018,
       "totalcopies": 10,
-      "availablecopies": 10,
+      "availablecopies": 9,
       "status": "available",
       "location": "Shelf L-29"
     },
@@ -9704,8 +9704,8 @@
       "category": "Endocrinology",
       "publicationyear": 2015,
       "totalcopies": 1,
-      "availablecopies": 1,
-      "status": "available",
+      "availablecopies": 0,
+      "status": "unavailable",
       "location": "Shelf I-01"
     },
     {
@@ -9836,7 +9836,7 @@
       "category": "Surgery",
       "publicationyear": 2021,
       "totalcopies": 7,
-      "availablecopies": 7,
+      "availablecopies": 6,
       "status": "available",
       "location": "Shelf R-01"
     },
@@ -11168,7 +11168,7 @@
       "category": "Pulmonology",
       "publicationyear": 2013,
       "totalcopies": 10,
-      "availablecopies": 10,
+      "availablecopies": 9,
       "status": "available",
       "location": "Shelf K-13"
     },
@@ -11780,7 +11780,7 @@
       "category": "Anesthesiology",
       "publicationyear": 2021,
       "totalcopies": 7,
-      "availablecopies": 7,
+      "availablecopies": 6,
       "status": "available",
       "location": "Shelf K-04"
     },
@@ -12596,7 +12596,7 @@
       "category": "Epidemiology",
       "publicationyear": 2021,
       "totalcopies": 3,
-      "availablecopies": 3,
+      "availablecopies": 2,
       "status": "available",
       "location": "Shelf X-12"
     },
@@ -13652,7 +13652,7 @@
       "category": "Science Fiction",
       "publicationyear": 2022,
       "totalcopies": 10,
-      "availablecopies": 8,
+      "availablecopies": 7,
       "status": "available",
       "location": "Shelf W-04"
     },

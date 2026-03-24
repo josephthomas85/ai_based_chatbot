@@ -2,7 +2,8 @@ import json
 from datetime import datetime, timedelta
 from flask import request, jsonify, session
 from config import Config
-from api.auth import require_login
+from api.auth import require_login, load_users, save_users
+from api.notifications import notify_staff, add_notification
 
 # Load books database
 def load_books():
@@ -108,15 +109,16 @@ def borrow_book():
     if not book:
         return jsonify({"success": False, "message": "Book not found"}), 404
     
+    # Determine status based on availability
+    status = "requested"
     if book['availablecopies'] == 0:
-        return jsonify({"success": False, "message": "Book is not available"}), 400
+        status = "queued"
     
-    # Create transaction
     transactions_data = load_transactions()
-    transactionid = f"TRN{str(len(transactions_data['transactions']) + 1).zfill(3)}"
-    borrowdate = datetime.now().strftime('%Y-%m-%d')
-    duedate = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
-    
+    transactionid = f"TRN{len(transactions_data['transactions']) + 1:03d}"
+    borrowdate = datetime.now().strftime("%Y-%m-%d")
+    duedate = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
+
     transaction = {
         "transactionid": transactionid,
         "userid": userid,
@@ -124,27 +126,30 @@ def borrow_book():
         "borrowdate": borrowdate,
         "duedate": duedate,
         "returndate": None,
-        "status": "borrowed"
+        "status": status
     }
     
-    # Update book availability
-    books_data['books'][book_index]['availablecopies'] -= 1
-    if books_data['books'][book_index]['availablecopies'] == 0:
-        books_data['books'][book_index]['status'] = 'unavailable'
+    # Update book availability if not queued
+    if status == "requested":
+        books_data['books'][book_index]['availablecopies'] -= 1
+        if books_data['books'][book_index]['availablecopies'] == 0:
+            books_data['books'][book_index]['status'] = 'unavailable'
     
     # Save changes
     transactions_data['transactions'].append(transaction)
     save_books(books_data)
     save_transactions(transactions_data)
     
+    # Notify staff
+    notify_staff(f"New borrow request for '{book['title']}' by user {userid}")
+    if status == "queued":
+        return jsonify({"success": True, "message": f"'{book['title']}' is currently out of stock. You have been added to the waitlist (FIFO)."}), 201
+    
     return jsonify({
-        "success": True,
-        "transactionid": transactionid,
-        "bookid": bookid,
-        "borrowdate": borrowdate,
-        "duedate": duedate,
-        "message": "Book borrowed successfully"
-    }), 200
+        "success": True, 
+        "message": f"Request for '{book['title']}' submitted successfully! Awaiting librarian approval.",
+        "transaction": transaction
+    }), 201
 
 # POST /api/books/return
 @require_login
@@ -171,23 +176,62 @@ def return_book():
         return jsonify({"success": False, "message": "No active borrow record found"}), 404
     
     # Update transaction
-    transactions_data['transactions'][transaction_index]['returndate'] = datetime.now().strftime('%Y-%m-%d')
+    return_datetime = datetime.now()
+    transactions_data['transactions'][transaction_index]['returndate'] = return_datetime.strftime('%Y-%m-%d')
     transactions_data['transactions'][transaction_index]['status'] = 'returned'
+    
+    # Check for late submission and calculate persistent fine
+    due_date = datetime.strptime(transaction['duedate'], '%Y-%m-%d')
+    fine_charged = 0
+    if return_datetime > due_date:
+        days_late = (return_datetime - due_date).days
+        if days_late > 0:
+            fine_charged = days_late * 1  # ₹1 per day
+            # Update user's unpaid_fines
+            users_data = load_users()
+            for u in users_data['users']:
+                if u['userid'] == userid:
+                    if 'unpaid_fines' not in u:
+                        u['unpaid_fines'] = 0
+                    u['unpaid_fines'] += fine_charged
+                    break
+            save_users(users_data)
     
     # Update book availability
     books_data = load_books()
+    book_restored = False
     for i, b in enumerate(books_data['books']):
         if b['bookid'] == bookid:
-            books_data['books'][i]['availablecopies'] += 1
-            books_data['books'][i]['status'] = 'available'
+            # Check for FIFO queue
+            queued_request = None
+            for t in transactions_data['transactions']:
+                if t['bookid'] == bookid and t['status'] == 'queued':
+                    queued_request = t
+                    break
+            
+            if queued_request:
+                # Automate next in line
+                queued_request['status'] = 'requested'
+                # Count stays reduced (or technically: return makes it 1, next in line makes it 0)
+                # So we just don't increment availablecopies.
+                add_notification(queued_request['userid'], f"Good news! '{b['title']}' is now available for you. The librarian will approve it shortly.")
+                notify_staff(f"FIFO Alert: '{b['title']}' is now reserved for queued user {queued_request['userid']}. Please approve.")
+            else:
+                books_data['books'][i]['availablecopies'] += 1
+                books_data['books'][i]['status'] = 'available'
+            book_restored = True
             break
     
     save_transactions(transactions_data)
     save_books(books_data)
     
+    msg = "Book returned successfully"
+    if fine_charged > 0:
+        msg += f". A late fine of ₹{fine_charged} has been added to your dues."
+    
     return jsonify({
         "success": True,
-        "message": "Book returned successfully"
+        "message": msg
     }), 200
 
 # GET /api/books/user/<userid>/borrowed
@@ -202,7 +246,7 @@ def get_user_borrowed_books(userid):
     # Get all borrowed books for user
     borrowed_books = []
     for t in transactions_data['transactions']:
-        if t['userid'] == userid and t['status'] == 'borrowed':
+        if t['userid'] == userid and t['status'] in ['borrowed', 'requested', 'queued', 'approved']:
             # Find book details
             for b in books_data['books']:
                 if b['bookid'] == t['bookid']:
@@ -210,8 +254,10 @@ def get_user_borrowed_books(userid):
                         "bookid": b['bookid'],
                         "title": b['title'],
                         "author": b['author'],
-                        "borrowdate": t['borrowdate'],
-                        "duedate": t['duedate']
+                        "borrowdate": t.get('borrowdate', ''),
+                        "duedate": t.get('duedate', ''),
+                        "status": t['status'],
+                        "pickup_deadline": t.get('pickup_deadline', '')
                     })
                     break
     
@@ -264,6 +310,13 @@ def get_user_overdue_books(userid):
     overdue_books = []
     today = datetime.now().date()
     
+    users_data = load_users()
+    unpaid_fines = 0
+    for u in users_data['users']:
+        if u['userid'] == userid:
+            unpaid_fines = u.get('unpaid_fines', 0)
+            break
+    
     for t in transactions_data['transactions']:
         if t['userid'] == userid and t['status'] == 'borrowed':
             due_date = datetime.strptime(t['duedate'], '%Y-%m-%d').date()
@@ -287,6 +340,7 @@ def get_user_overdue_books(userid):
     return jsonify({
         "success": True,
         "overduebooks": overdue_books,
+        "unpaid_fines": unpaid_fines,
         "total": len(overdue_books)
     }), 200
 

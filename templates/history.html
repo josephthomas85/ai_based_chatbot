@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Borrow/Return History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
     <style>
         * {
@@ -26,14 +27,14 @@
             display: flex;
             flex-direction: column;
             flex: 1;
-            background: #f5f7fa;
+            background: #f6f6f6;
             min-height: calc(100vh - 60px);
         }
 
         .history-header {
             padding: 30px;
             text-align: center;
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            background: linear-gradient(135deg, #818181 0%, #6b6b6b 100%);
             color: white;
         }
 
@@ -75,7 +76,7 @@
         }
 
         .history-table thead {
-            background: #34495e;
+            background: #454545;
             color: white;
         }
 
@@ -93,7 +94,7 @@
         }
 
         .history-table tbody tr:hover {
-            background-color: #f8f9fa;
+            background-color: #f8f8f8;
         }
 
         .history-table td {
@@ -103,11 +104,11 @@
 
         .history-table td.title {
             font-weight: 600;
-            color: #2c3e50;
+            color: #3a3a3a;
         }
 
         .history-table td.author {
-            color: #7f8c8d;
+            color: #888888;
             font-size: 13px;
         }
 
@@ -120,19 +121,19 @@
         }
 
         .status-badge.returned {
-            background-color: #d5f4e6;
-            color: #27ae60;
+            background-color: #e9e9e9;
+            color: #7c7c7c;
         }
 
         .status-badge.borrowed {
-            background-color: #ffeaa7;
-            color: #f39c12;
+            background-color: #e8e8e8;
+            color: #a6a6a6;
         }
 
         .no-data {
             text-align: center;
             padding: 60px 20px;
-            color: #7f8c8d;
+            color: #888888;
         }
 
         .no-data-icon {
@@ -150,7 +151,7 @@
         .btn-action {
             display: inline-block;
             padding: 10px 20px;
-            background: #3498db;
+            background: #818181;
             color: white;
             border: none;
             border-radius: 6px;
@@ -160,7 +161,7 @@
         }
 
         .btn-action:hover {
-            background: #2980b9;
+            background: #6b6b6b;
             transform: translateY(-2px);
         }
     </style>
@@ -169,12 +170,12 @@
     <header class="navbar">
         <div class="navbar-container">
             <div class="navbar-brand">
-                <h1>📚 Library Management System</h1>
+                <h1><i data-lucide="library"></i> Library Management System</h1>
             </div>
             <div class="navbar-right">
-                <button id="notificationBtn" class="btn-notification" title="Notifications">
-                    🔔 <span id="notificationCount" class="badge"></span>
-                </button>
+                <a href="{{ url_for('notifications_page') }}" id="notificationBtn" class="btn-notification" title="Notifications">
+                    <i data-lucide="bell"></i> <span id="notificationCount" class="badge"></span>
+                </a>
                 <span id="userName" class="user-info"></span>
                 <button id="logoutBtn" class="btn-logout">Logout</button>
             </div>
@@ -183,24 +184,30 @@
 
     <div class="history-page" data-userid="{{ userid }}" data-fullname="{{ fullname }}">
         <div class="history-header">
-            <h2>📖 Your Transaction History</h2>
+            <h2><i data-lucide="history"></i> Your Transaction History</h2>
             <p>View all your borrowed and returned books</p>
         </div>
 
         <div class="history-content">
             <div id="historyContainer">
                 <div class="no-data">
-                    <div class="no-data-icon">⏳</div>
+                    <div class="no-data-icon"><i data-lucide="loader" class="animate-spin"></i></div>
                     <p>Loading...</p>
                 </div>
             </div>
         </div>
 
         <div class="history-footer">
-            <button id="backHome" class="btn-action">← Back to Home</button>
+            <button id="backHome" class="btn-action"><i data-lucide="arrow-left" style="width:16px; height:16px; vertical-align:middle;"></i> Back to Home</button>
         </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/history.js') }}"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

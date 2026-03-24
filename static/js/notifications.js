@@ -29,10 +29,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     localStorage.setItem('userid', userid);
     localStorage.setItem('fullname', fullname);
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        localStorage.clear();
-        fetch('/api/logout', { method: 'POST' }).catch(e => console.error(e));
-        window.location.href = '/login';
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
     });
     document.getElementById('backHome').addEventListener('click', () => {
         window.location.href = '/home';
@@ -43,6 +42,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await loadNotifications();
 });
+
+async function logout() {
+    try {
+        await fetch('/api/logout', { method: 'POST' });
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+    localStorage.clear();
+    window.location.href = '/login';
+}
 
 async function loadNotifications() {
     const list = document.getElementById('notificationsList');

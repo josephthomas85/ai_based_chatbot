@@ -26,16 +26,22 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupEventListeners() {
     // Logout functionality
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-            try {
-                await fetch(`${API_BASE_URL}/logout`, { method: 'POST' });
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-            localStorage.clear();
-            window.location.href = '/login';
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
         });
     }
+}
+
+// Logout function
+async function logout() {
+    try {
+        await fetch(`${API_BASE_URL}/logout`, { method: 'POST' });
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+    localStorage.clear();
+    window.location.href = '/login';
 }
 
 // Load notifications count
@@ -100,26 +106,39 @@ function displayBooks(books) {
 
         let statusClass = 'status-normal';
         let statusText = 'On Time';
+        let subText = '';
 
-        if (daysUntilDue < 0) {
-            statusClass = 'status-overdue';
-            statusText = `${Math.abs(daysUntilDue)} days overdue`;
-        } else if (daysUntilDue <= 3) {
-            statusClass = 'status-due-soon';
-            statusText = `Due in ${daysUntilDue} day${daysUntilDue !== 1 ? 's' : ''}`;
+        if (book.status === 'approved') {
+            statusClass = 'status-due-soon'; // Using a distinct color from existing ones or same as due-soon
+            statusText = 'Awaiting Collection';
+            subText = `Please collect by: <strong>${formatDate(book.pickup_deadline)}</strong>`;
+        } else if (book.status === 'requested' || book.status === 'queued') {
+            statusClass = 'status-normal';
+            statusText = book.status.toUpperCase();
+            subText = 'Processing...';
+        } else {
+            if (daysUntilDue < 0) {
+                statusClass = 'status-overdue';
+                statusText = `${Math.abs(daysUntilDue)} days overdue`;
+            } else if (daysUntilDue <= 3) {
+                statusClass = 'status-due-soon';
+                statusText = `Due in ${daysUntilDue} day${daysUntilDue !== 1 ? 's' : ''}`;
+            }
         }
+
+        const actionBtn = (book.status === 'borrowed') 
+            ? `<button class="return-btn" onclick="returnBook('${book.bookid}')">Return Book</button>`
+            : '';
 
         card.innerHTML = `
             <div class="book-title">${escapeHtml(book.title)}</div>
             <div class="book-author">by ${escapeHtml(book.author)}</div>
             <div class="book-details">
-                Borrowed: ${formatDate(book.borrowdate)}<br>
-                Due: ${formatDate(book.duedate)}<br>
+                ${book.status === 'borrowed' ? `Borrowed: ${formatDate(book.borrowdate)}<br>Due: ${formatDate(book.duedate)}<br>` : ''}
+                ${subText ? subText + '<br>' : ''}
                 <span class="status ${statusClass}">${statusText}</span>
             </div>
-            <button class="return-btn" onclick="returnBook('${book.bookid}')">
-                Return Book
-            </button>
+            ${actionBtn}
         `;
 
         booksGrid.appendChild(card);

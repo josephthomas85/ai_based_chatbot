@@ -27,7 +27,8 @@ let allBooks = [];
 let conversationContext = '';  // Track conversation context (e.g., waiting_for_book)
 let notifications = [];  // store fetched notifications
 let overdueDetails = [];  // store overdue book details for fee breakdown
-let overdueFeeTotal = 0;  // cached fee total for popup
+let overdueFeeTotal = 0;  // cached overall fee total for popup
+let persistentFines = 0;  // cached unpaid persistent fines
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     userName.textContent = `Welcome, ${fullname}!`;
-    setupEventListeners();
+
     loadNotifications();
 
     // Set up chat event listeners always (since views can be switched)
@@ -67,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const feeModal = document.getElementById('feeModal');
         const feeModalClose = document.getElementById('feeModalClose');
         const feeModalCloseBtn = document.getElementById('feeModalCloseBtn');
+        const feeModalPayBtn = document.getElementById('feeModalPayBtn');
 
         if (feeModal) {
             feeModal.addEventListener('click', (evt) => {
@@ -85,8 +87,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 feeModal.style.display = 'none';
             });
         }
+        if (feeModalPayBtn) {
+            feeModalPayBtn.addEventListener('click', () => {
+                payFines();
+            });
+        }
+    }
+    if (modalAction) modalAction.addEventListener('click', confirmModalAction);
+
+    // Logout button listeners - handle both navbar and sidebar buttons
+    document.querySelectorAll('#logoutBtn, #sidebarLogoutBtn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+        });
     });
-    modalAction.addEventListener('click', confirmModalAction);
 
     // sidebar nav links - now redirect to separate pages
     document.querySelectorAll('.sidebar-nav a').forEach(link => {
@@ -98,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-}
+});
 
 // Send Chat Message
 async function sendMessage() {
@@ -306,9 +321,10 @@ async function loadDashboardData() {
                     });
                 }
             });
-            overdueFeeTotal = feeTotal;
+            persistentFines = data.unpaid_fines || 0;
+            overdueFeeTotal = feeTotal + persistentFines;
             document.getElementById('cardOverdue').textContent = overdueCount;
-            document.getElementById('cardFees').textContent = `₹${feeTotal}`;
+            document.getElementById('cardFees').textContent = `₹${overdueFeeTotal}`;
             document.getElementById('cardAlerts').textContent = notifications.filter(n => !n.read).length;
             // populate alerts list from notifications
             const alertsList = document.getElementById('alertsList');
@@ -350,9 +366,14 @@ function showFeeModal() {
 
         detailsEl.innerHTML = `
             <div style="margin-bottom: 16px;">
-                <div style="font-weight: 600;">Total Fine</div>
-                <div style="font-size: 22px; color: #e74c3c;">₹${overdueFeeTotal}</div>
+                <div style="font-weight: 600;">Previous Unpaid Fines</div>
+                <div style="font-size: 18px; color: #787878;">₹${persistentFines}</div>
             </div>
+            <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600;">Total Fine (Including Active)</div>
+                <div style="font-size: 22px; color: #787878;">₹${overdueFeeTotal}</div>
+            </div>
+            
             <div style="max-height: 280px; overflow-y: auto;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
@@ -370,6 +391,9 @@ function showFeeModal() {
             </div>
         `;
     }
+
+    const payBtn = document.getElementById('feeModalPayBtn');
+    if (payBtn) payBtn.style.display = persistentFines > 0 ? 'inline-block' : 'none';
 
     modal.style.display = 'flex';
 }
@@ -638,3 +662,24 @@ bookModal.addEventListener('click', (e) => {
         closeModal();
     }
 });
+
+// Pay Fines API
+async function payFines() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/pay_fines`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+        if (data.success) {
+            alert('Fines paid successfully!');
+            document.getElementById('feeModal').style.display = 'none';
+            loadDashboardData();
+        } else {
+            alert(data.message || 'Error paying fines.');
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Network error while paying fines.');
+    }
+}

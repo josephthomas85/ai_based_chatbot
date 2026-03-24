@@ -26,16 +26,22 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupEventListeners() {
     // Logout functionality
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-            try {
-                await fetch(`${API_BASE_URL}/logout`, { method: 'POST' });
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-            localStorage.clear();
-            window.location.href = '/login';
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
         });
     }
+}
+
+// Logout function
+async function logout() {
+    try {
+        await fetch(`${API_BASE_URL}/logout`, { method: 'POST' });
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+    localStorage.clear();
+    window.location.href = '/login';
 }
 
 // Load notifications count

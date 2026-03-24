@@ -137,8 +137,9 @@ function showSuccess(message, element) {
 
 // Check if already logged in
 document.addEventListener('DOMContentLoaded', () => {
-    const userid = localStorage.getItem('userid');
-    if (userid) {
-        window.location.href = '/home';
-    }
+    // If login.js is executing, it means the backend session doesn't exist.
+    // Clear any stale front-end localStorage to prevent infinite redirects!
+    localStorage.removeItem('userid');
+    localStorage.removeItem('username');
+    localStorage.removeItem('fullname');
 });

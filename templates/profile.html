@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}?v=4">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}?v=1">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <h1><i data-lucide="library"></i> Library</h1>
+            </div>
+            <div class="navbar-right">
+                <span class="user-info">Welcome, {{ fullname }}</span>
+                <a href="/home" class="btn-logout" style="text-decoration:none; display:inline-block;">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>LMS <span>AI</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/home"><i data-lucide="layout-dashboard" class="icon"></i> Dashboard</a></li>
+                    <li><a href="/mybooks"><i data-lucide="book-open" class="icon"></i> My Books</a></li>
+                    <li><a href="/recommendations"><i data-lucide="sparkles" class="icon"></i> Recommendations</a></li>
+                    <li><a href="/history"><i data-lucide="history" class="icon"></i> History</a></li>
+                    <li><a href="/overdue"><i data-lucide="alert-circle" class="icon"></i> Overdue</a></li>
+                    <li><a href="/profile" class="active"><i data-lucide="user" class="icon"></i> My Profile</a></li>
+                
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <h1>My Profile</h1>
+                <p class="dashboard-subtitle">Manage your personal information and photo</p>
+            </header>
+
+            <div class="profile-container">
+                <!-- Avatar Upload Section -->
+                <div class="avatar-card card">
+                    <div class="avatar-wrapper" id="avatarWrapper">
+                        <img id="profileImage" src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="Profile Photo">
+                        <div class="avatar-overlay">
+                            <span><i data-lucide="camera" style="width:16px; height:16px; vertical-align:middle;"></i> Change</span>
+                        </div>
+                    </div>
+                    <form id="photoUploadForm" style="display:none;">
+                        <input type="file" id="photoInput" accept="image/*">
+                    </form>
+                    <h3 id="displayFullname">Loading...</h3>
+                    <p id="displayUsername" style="color: #656565;">@loading</p>
+                    
+                    <button id="savePhotoBtn" class="btn-action" style="display:none; margin-top:20px; background:#000000;">Save New Photo</button>
+                </div>
+
+                <!-- Profile Details Form -->
+                <div class="details-card card" style="flex: 2; align-items:flex-start; flex-direction:column;">
+                    <h2 style="margin-bottom: 20px;">Personal Details</h2>
+                    <form id="profileForm" style="width: 100%;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="fullname" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" id="username" class="form-input" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="email" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="phone" class="form-input" placeholder="+1 234 567 8900">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Registered Date</label>
+                            <input type="text" id="registereddate" class="form-input" disabled style="background:#eeeeee;">
+                        </div>
+
+                        <div id="profileMessage" style="margin: 15px 0;"></div>
+                        <button type="submit" class="btn-action" id="saveProfileBtn">Save Profile Changes</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/profile.js') }}?v=1"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 import json
 import bcrypt
+import os
+from werkzeug.utils import secure_filename
 from flask import request, jsonify, session
 from functools import wraps
 from config import Config
@@ -106,6 +108,94 @@ def register():
         "userid": userid,
         "message": "User registered successfully"
     }), 201
+# POST /api/pay_fines
+@require_login
+def pay_fines():
+    userid = session.get('userid')
+    users_data = load_users()
+    
+    for u in users_data['users']:
+        if u['userid'] == userid:
+            if u.get('unpaid_fines', 0) == 0:
+                return jsonify({"success": False, "message": "No outstanding fines to pay"}), 400
+            u['unpaid_fines'] = 0
+            break
+            
+    save_users(users_data)
+    return jsonify({"success": True, "message": "Fines paid successfully"}), 200
+
+# GET /api/user/profile
+@require_login
+def get_profile():
+    userid = session.get('userid')
+    users_data = load_users()
+    for u in users_data['users']:
+        if u['userid'] == userid:
+            profile = u.copy()
+            if 'password' in profile:
+                del profile['password']
+            return jsonify({"success": True, "user": profile}), 200
+    return jsonify({"success": False, "message": "User not found"}), 404
+
+# POST /api/user/update_profile
+@require_login
+def update_profile():
+    userid = session.get('userid')
+    data = request.get_json()
+    users_data = load_users()
+    
+    new_username = data.get('username')
+    for u in users_data['users']:
+        if u['username'] == new_username and u['userid'] != userid:
+            return jsonify({"success": False, "message": "Username already taken"}), 409
+            
+    for u in users_data['users']:
+        if u['userid'] == userid:
+            if data.get('fullname'): u['fullname'] = data['fullname']
+            if data.get('username'): u['username'] = data['username']
+            if data.get('email') is not None: u['email'] = data['email']
+            if data.get('phone') is not None: u['phone'] = data['phone']
+            
+            if data.get('fullname'): session['fullname'] = data['fullname']
+            if data.get('username'): session['username'] = data['username']
+            
+            save_users(users_data)
+            return jsonify({"success": True, "message": "Profile updated"}), 200
+            
+    return jsonify({"success": False, "message": "User not found"}), 404
+
+# POST /api/user/upload_photo
+@require_login
+def upload_photo():
+    if 'photo' not in request.files:
+        return jsonify({"success": False, "message": "No photo provided"}), 400
+        
+    file = request.files['photo']
+    if file.filename == '':
+        return jsonify({"success": False, "message": "No selected file"}), 400
+        
+    if file:
+        userid = session.get('userid')
+        filename = secure_filename(file.filename)
+        ext = filename.split('.')[-1] if '.' in filename else 'jpg'
+        new_filename = f"{userid}_avatar.{ext}"
+        
+        upload_dir = os.path.join(os.getcwd(), 'static', 'uploads', 'profiles')
+        os.makedirs(upload_dir, exist_ok=True)
+        file_path = os.path.join(upload_dir, new_filename)
+        
+        file.save(file_path)
+        
+        photo_url = f"/static/uploads/profiles/{new_filename}"
+        
+        users_data = load_users()
+        for u in users_data['users']:
+            if u['userid'] == userid:
+                u['profile_photo'] = photo_url
+                save_users(users_data)
+                return jsonify({"success": True, "photo_url": photo_url}), 200
+                
+    return jsonify({"success": False, "message": "Error uploading file"}), 500
 
 # Export functions
 from api import api_bp
@@ -113,3 +203,7 @@ from api import api_bp
 api_bp.add_url_rule('/login', 'login', login, methods=['POST'])
 api_bp.add_url_rule('/logout', 'logout', logout, methods=['POST'])
 api_bp.add_url_rule('/register', 'register', register, methods=['POST'])
+api_bp.add_url_rule('/pay_fines', 'pay_fines', pay_fines, methods=['POST'])
+api_bp.add_url_rule('/user/profile', 'get_profile', get_profile, methods=['GET'])
+api_bp.add_url_rule('/user/update_profile', 'update_profile', update_profile, methods=['POST'])
+api_bp.add_url_rule('/user/upload_photo', 'upload_photo', upload_photo, methods=['POST'])

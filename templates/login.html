@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Management - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body>
     <div class="login-container">
         <div class="login-box">
-            <h1>📚 Library Management System</h1>
+            <h1><i data-lucide="library"></i> Library Management System</h1>
             <p class="subtitle">AI-Powered Library Assistant</p>
             
             <form id="loginForm">
@@ -46,7 +47,7 @@
         
         <!-- Register Form -->
         <div class="register-box" id="registerBox" style="display: none;">
-            <h1>📚 Create Account</h1>
+            <h1><i data-lucide="user-plus"></i> Create Account</h1>
             <p class="subtitle">Register for Library Management</p>
             
             <form id="registerForm">
@@ -101,6 +102,12 @@
         </div>
     </div>
     
-    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/login.js') }}?v=2"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

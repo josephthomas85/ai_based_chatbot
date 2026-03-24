@@ -4,123 +4,579 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Chatbot - AI Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
     <style>
-        .chatbot-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+        /* Full-screen desktop chat layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
         }
-        .chat-messages {
-            height: 500px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background: #f9f9f9;
-        }
-        .message {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 8px;
-        }
-        .user-message {
-            background: #007bff;
-            color: white;
-            text-align: right;
-        }
-        .bot-message {
-            background: #e9ecef;
-            color: #333;
-        }
-        .chat-input-area {
+
+        body {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
         }
+
+        .chat-page-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            height: calc(100vh - 64px);
+        }
+
+        /* Left Panel - Sidebar */
+        .chat-sidebar {
+            width: 280px;
+            min-width: 280px;
+            background: #0a0a0a;
+            border-right: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-section-title {
+            color: #666;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0 20px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #aaa;
+            font-size: 14px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-item:hover, .sidebar-item.active {
+            background: #111;
+            color: #fff;
+            border-left-color: #fff;
+        }
+
+        .sidebar-item svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: #1a1a1a;
+            margin: 15px 0;
+        }
+
+        .sidebar-quick-actions {
+            padding: 0 12px;
+        }
+
+        .quick-action-chip {
+            display: block;
+            width: 100%;
+            background: #111;
+            border: 1px solid #222;
+            color: #ccc;
+            padding: 9px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            text-align: left;
+            margin-bottom: 6px;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .quick-action-chip:hover {
+            background: #1a1a1a;
+            border-color: #444;
+            color: #fff;
+        }
+
+        /* Main Chat Area */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f7f7f8;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #fff;
+            border-bottom: 1px solid #e8e8e8;
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-shrink: 0;
+        }
+
+        .chat-header-avatar {
+            width: 40px;
+            height: 40px;
+            background: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .chat-header-info h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111;
+            margin: 0;
+        }
+
+        .chat-header-info p {
+            font-size: 12px;
+            color: #22c55e;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Messages area */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-messages::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #d0d0d0;
+            border-radius: 3px;
+        }
+
+        /* Message bubbles */
+        .message-row {
+            display: flex;
+            gap: 12px;
+            max-width: 80%;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-row.user-row {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-row.bot-row {
+            align-self: flex-start;
+        }
+
+        .message-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .bot-avatar {
+            background: #000;
+            color: #fff;
+        }
+
+        .user-avatar {
+            background: #333;
+            color: #fff;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 560px;
+        }
+
+        .bot-bubble {
+            background: #fff;
+            color: #111;
+            border: 1px solid #e5e5e5;
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .user-bubble {
+            background: #000;
+            color: #fff;
+            border-bottom-right-radius: 6px;
+        }
+
+        /* Book cards in chat */
+        .book-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+            max-width: 620px;
+        }
+
+        .book-card {
+            background: #f8f8f8;
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .book-card:hover {
+            background: #f0f0f0;
+            border-color: #ccc;
+        }
+
+        .book-card-title {
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 3px;
+            font-size: 13px;
+        }
+
+        .book-card-author {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .book-card-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-available { background: #dcfce7; color: #166534; }
+        .status-unavailable { background: #fee2e2; color: #991b1b; }
+        .status-borrowed { background: #fef3c7; color: #92400e; }
+
+        /* Suggestions (quick reply chips) */
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .chip {
+            background: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+
+        .chip:hover {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        /* Typing indicator */
+        .typing-row {
+            display: flex;
+            gap: 12px;
+            align-self: flex-start;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .typing-indicator {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 18px;
+            border-bottom-left-radius: 6px;
+            padding: 14px 18px;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing-bounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-6px); }
+        }
+
+        /* Input area */
+        .chat-input-wrapper {
+            background: #fff;
+            border-top: 1px solid #e8e8e8;
+            padding: 16px 28px;
+            flex-shrink: 0;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            background: #f7f7f8;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 10px 16px;
+            transition: border-color 0.2s ease;
+        }
+
+        .chat-input-row:focus-within {
+            border-color: #000;
+            background: #fff;
+        }
+
         .chat-input {
             flex: 1;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            resize: none;
+            outline: none;
+            min-height: 24px;
+            max-height: 120px;
+            line-height: 1.6;
+            color: #111;
         }
+
+        .chat-input::placeholder { color: #aaa; }
+
         .send-btn {
-            padding: 12px 20px;
-            background: #28a745;
+            width: 38px;
+            height: 38px;
+            background: #000;
             color: white;
             border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover { background: #333; transform: scale(1.05); }
+        .send-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+        .input-hint {
+            font-size: 12px;
+            color: #bbb;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* Scrollable book list (when many results) */
+        .book-list-scroll {
+            max-height: 280px;
+            overflow-y: auto;
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .book-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f8f8;
+            border: 1px solid #e5e5e5;
             border-radius: 8px;
-            cursor: pointer;
+            padding: 10px 14px;
+            font-size: 13px;
         }
-        .send-btn:hover {
-            background: #218838;
+
+        .book-list-info { flex: 1; }
+        .book-list-title { font-weight: 600; color: #111; }
+        .book-list-author { color: #777; font-size: 12px; }
+
+        .timestamp {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 4px;
+            text-align: right;
         }
-        .suggestions {
-            margin-top: 10px;
-        }
-        .suggestion-btn {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            padding: 5px 10px;
-            margin: 2px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .suggestion-btn:hover {
-            background: #e9ecef;
-        }
+
+        .bot-row .timestamp { text-align: left; }
     </style>
 </head>
 <body>
     <header class="navbar">
         <div class="navbar-container">
             <div class="navbar-brand">
-                <h1>🤖 Library AI Chatbot</h1>
+                <h1><i data-lucide="bot"></i> Library AI Assistant</h1>
             </div>
             <div class="navbar-right">
-                <button id="notificationBtn" class="btn-notification" title="Notifications">
-                    🔔 <span id="notificationCount" class="badge"></span>
-                </button>
+                <a href="{{ url_for('home_page') }}" class="btn-notification" title="Home" style="text-decoration:none;">
+                    <i data-lucide="layout-dashboard"></i>
+                </a>
+                <a href="{{ url_for('notifications_page') }}" class="btn-notification" title="Notifications">
+                    <i data-lucide="bell"></i> <span id="notificationCount" class="badge"></span>
+                </a>
                 <span id="userName" class="user-info"></span>
-                <a href="{{ url_for('home') }}" class="btn-logout">Back to Dashboard</a>
+                <button id="logoutBtn" class="btn-logout">Logout</button>
             </div>
         </div>
     </header>
 
-    <div class="chatbot-container">
-        <div id="chatMessages" class="chat-messages">
-            <div class="message bot-message">
-                <div class="message-content">
-                    Hello! I'm your library assistant. I can help you:
-                    <br>• Search for books
-                    <br>• Borrow or return books
-                    <br>• Check your borrowing history
-                    <br>• Get recommendations
-                    <br><br>What would you like to do?
+    <div class="chat-page-wrapper">
+        <!-- Sidebar -->
+        <nav class="chat-sidebar">
+            <div class="sidebar-section-title">Navigation</div>
+            <div class="sidebar-item" onclick="sendQuickMessage('Show all books')">
+                <i data-lucide="library"></i> All Books
+            </div>
+            <div class="sidebar-item" onclick="window.location.href='{{ url_for('mybooks_page') }}'">
+                <i data-lucide="bookmark"></i> My Books
+            </div>
+            <div class="sidebar-item" onclick="window.location.href='{{ url_for('recommendations_page') }}'">
+                <i data-lucide="sparkles"></i> Recommendations
+            </div>
+            <div class="sidebar-item" onclick="window.location.href='{{ url_for('history_page') }}'">
+                <i data-lucide="history"></i> Borrow History
+            </div>
+            <div class="sidebar-item" onclick="window.location.href='{{ url_for('overdue_page') }}'">
+                <i data-lucide="alert-triangle"></i> Overdue Books
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <div class="sidebar-section-title">Quick Actions</div>
+            <div class="sidebar-quick-actions">
+                <button class="quick-action-chip" onclick="sendQuickMessage('Show all books')">
+                    <i data-lucide="book-open" style="width:13px;height:13px;margin-right:6px;vertical-align:middle;"></i> Browse All Books
+                </button>
+                <button class="quick-action-chip" onclick="sendQuickMessage('I want to borrow a book')">
+                    <i data-lucide="book-plus" style="width:13px;height:13px;margin-right:6px;vertical-align:middle;"></i> Borrow a Book
+                </button>
+                <button class="quick-action-chip" onclick="sendQuickMessage('I want to return a book')">
+                    <i data-lucide="book-minus" style="width:13px;height:13px;margin-right:6px;vertical-align:middle;"></i> Return a Book
+                </button>
+                <button class="quick-action-chip" onclick="sendQuickMessage('Show my borrowed books')">
+                    <i data-lucide="list" style="width:13px;height:13px;margin-right:6px;vertical-align:middle;"></i> My Active Loans
+                </button>
+                <button class="quick-action-chip" onclick="sendQuickMessage('Recommend me books')">
+                    <i data-lucide="star" style="width:13px;height:13px;margin-right:6px;vertical-align:middle;"></i> Get Recommendations
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Chat -->
+        <main class="chat-main">
+            <div class="chat-header">
+                <div class="chat-header-avatar">
+                    <i data-lucide="bot" style="width:20px;height:20px;"></i>
+                </div>
+                <div class="chat-header-info">
+                    <h2>Library AI Assistant</h2>
+                    <p><span class="online-dot"></span>Online — ready to help</p>
                 </div>
             </div>
-        </div>
 
-        <div class="chat-input-area">
-            <input type="text" id="chatInput" class="chat-input" placeholder="Ask me anything about the library...">
-            <button id="sendBtn" class="send-btn">Send</button>
-        </div>
+            <div id="chatMessages" class="chat-messages">
+                <!-- Initial bot welcome message -->
+                <div class="message-row bot-row">
+                    <div class="message-avatar bot-avatar">AI</div>
+                    <div>
+                        <div class="message-bubble bot-bubble">
+                            Hello! I'm your <strong>Library AI Assistant</strong>.<br><br>
+                            I can help you <strong>search</strong> for books, <strong>borrow</strong> or <strong>return</strong> titles, check your <strong>loan history</strong>, and get personalised <strong>recommendations</strong>.<br><br>
+                            What would you like to do today?
+                        </div>
+                        <div class="suggestion-chips">
+                            <button class="chip" onclick="sendQuickMessage('Show all books')">Browse books</button>
+                            <button class="chip" onclick="sendQuickMessage('Borrow a book')">Borrow a book</button>
+                            <button class="chip" onclick="sendQuickMessage('My books')">My loans</button>
+                            <button class="chip" onclick="sendQuickMessage('Recommend me books')">Recommendations</button>
+                        </div>
+                        <div class="timestamp">Just now</div>
+                    </div>
+                </div>
+            </div>
 
-        <div id="suggestions" class="suggestions"></div>
-    </div>
-
-    <!-- Loading spinner -->
-    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
-        <div class="spinner"></div>
+            <div class="chat-input-wrapper">
+                <div class="chat-input-row">
+                    <textarea id="chatInput" class="chat-input" rows="1" placeholder="Ask me anything — 'Do you have Python books?', 'I want to borrow a book'..."></textarea>
+                    <button id="sendBtn" class="send-btn" title="Send">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <p class="input-hint">Press Enter to send &bull; Shift+Enter for new line</p>
+            </div>
+        </main>
     </div>
 
     <script>
-        // Set user data from template
         localStorage.setItem('userid', '{{ userid }}');
         localStorage.setItem('username', '{{ username }}');
         localStorage.setItem('fullname', '{{ fullname }}');
     </script>
-    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}?v=5"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>

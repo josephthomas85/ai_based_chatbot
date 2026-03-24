@@ -41,10 +41,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     localStorage.setItem('userid', userid);
     localStorage.setItem('fullname', fullname);
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        localStorage.clear();
-        fetch('/api/logout', { method: 'POST' }).catch(e => console.error(e));
-        window.location.href = '/login';
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
     });
 
     document.getElementById('backHome').addEventListener('click', () => {
@@ -58,6 +57,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 Calling loadHistory with userid:', currentUserid);
     await loadHistory();
 });
+
+async function logout() {
+    try {
+        await fetch('/api/logout', { method: 'POST' });
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+    localStorage.clear();
+    window.location.href = '/login';
+}
 
 async function loadHistory() {
     const container = document.getElementById('historyContainer');
