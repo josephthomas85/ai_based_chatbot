@@ -869,7 +869,8 @@
       "userid": "USR001",
       "bookid": "BK00001",
       "date": "2026-03-21",
-      "status": "requested"
+      "status": "approved",
+      "pickup_deadline": "2026-03-24"
     },
     {
       "transactionid": "TRN_TEST_01",

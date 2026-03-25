@@ -69,6 +69,13 @@
       "message": "Your request for 'Mastering Svelte' was declined.",
       "read": true,
       "timestamp": "2026-03-23T12:45:57.702370"
+    },
+    {
+      "id": "NTF011",
+      "userid": "USR001",
+      "message": "Your request for 'Ultimate Redis' has been APPROVED! Please collect the book from the library by 2026-03-24. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-23T14:14:21.110213"
     }
   ],
   "watchers": [
