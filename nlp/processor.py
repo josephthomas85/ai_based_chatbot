@@ -116,10 +116,14 @@ class NLPProcessor:
                 return book
         
         # Try matching any significant words
-        search_words = set(search_lower.split())
+        from .intents import STOP_WORDS
+        search_words = set(w for w in search_lower.split() if w not in STOP_WORDS and len(w) > 2)
+        if not search_words:
+            return None
+            
         for book in books:
-            book_title_words = set(book['title'].lower().split())
-            # If any word matches, consider it a match
+            book_title_words = set(w for w in book['title'].lower().split() if w not in STOP_WORDS)
+            # If any significant word matches, consider it a match
             if search_words & book_title_words:
                 return book
         

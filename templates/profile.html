@@ -48,21 +48,40 @@
             </header>
 
             <div class="profile-container">
-                <!-- Avatar Upload Section -->
-                <div class="avatar-card card">
-                    <div class="avatar-wrapper" id="avatarWrapper">
-                        <img id="profileImage" src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="Profile Photo">
-                        <div class="avatar-overlay">
-                            <span><i data-lucide="camera" style="width:16px; height:16px; vertical-align:middle;"></i> Change</span>
+                <!-- Left Column -->
+                <div class="left-col" style="display:flex; flex-direction:column; gap:30px; flex:1;">
+                    <!-- Avatar Upload Section -->
+                    <div class="avatar-card card">
+                        <div class="avatar-wrapper" id="avatarWrapper">
+                            <img id="profileImage" src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="Profile Photo">
+                            <div class="avatar-overlay">
+                                <span><i data-lucide="camera" style="width:16px; height:16px; vertical-align:middle;"></i> Change</span>
+                            </div>
                         </div>
+                        <form id="photoUploadForm" style="display:none;">
+                            <input type="file" id="photoInput" accept="image/*">
+                        </form>
+                        <h3 id="displayFullname">Loading...</h3>
+                        <p id="displayUsername" style="color: #656565;">@loading</p>
+                        
+                        <button id="savePhotoBtn" class="btn-action" style="display:none; margin-top:20px; background:#000000;">Save New Photo</button>
                     </div>
-                    <form id="photoUploadForm" style="display:none;">
-                        <input type="file" id="photoInput" accept="image/*">
-                    </form>
-                    <h3 id="displayFullname">Loading...</h3>
-                    <p id="displayUsername" style="color: #656565;">@loading</p>
-                    
-                    <button id="savePhotoBtn" class="btn-action" style="display:none; margin-top:20px; background:#000000;">Save New Photo</button>
+
+                    <!-- Fines Card -->
+                    <div class="fines-card card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align:center; padding: 30px;">
+                        <div style="background:#fef2f2; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;">
+                            <i data-lucide="credit-card" style="color:#ef4444; width:24px; height:24px;"></i>
+                        </div>
+                        <h3 style="margin-bottom:10px;">Missing Books Fee</h3>
+                        {% if unpaid_fines and unpaid_fines > 0 %}
+                            <h1 style="color:#ef4444; font-size:36px; margin-bottom:10px;">${{ "%.2f"|format(unpaid_fines) }}</h1>
+                            <p style="color:#656565; font-size:14px; margin-bottom:20px;">You have an overdue balance. Please pay to continue borrowing items.</p>
+                            <button id="payFinesBtn" class="btn-action" style="width:100%; background:#ef4444; color:white;">Pay Now</button>
+                        {% else %}
+                            <h1 style="color:#10b981; font-size:36px; margin-bottom:10px;">$0.00</h1>
+                            <p style="color:#656565; font-size:14px;">Your account is in good standing.</p>
+                        {% endif %}
+                    </div>
                 </div>
 
                 <!-- Profile Details Form -->
@@ -115,6 +134,35 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         lucide.createIcons();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const payFinesBtn = document.getElementById('payFinesBtn');
+            if(payFinesBtn) {
+                payFinesBtn.addEventListener('click', async () => {
+                    payFinesBtn.textContent = "Processing...";
+                    payFinesBtn.disabled = true;
+                    try {
+                        const res = await fetch('/api/pay_fines', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            alert("Payment Successful!");
+                            window.location.reload();
+                        } else {
+                            alert(data.message || "Payment Failed.");
+                            payFinesBtn.textContent = "Pay Now";
+                            payFinesBtn.disabled = false;
+                        }
+                    } catch (err) {
+                        alert("Error processing payment.");
+                        payFinesBtn.textContent = "Pay Now";
+                        payFinesBtn.disabled = false;
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

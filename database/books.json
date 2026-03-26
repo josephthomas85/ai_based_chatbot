@@ -8,7 +8,7 @@
       "category": "System Design",
       "publicationyear": 2018,
       "totalcopies": 5,
-      "availablecopies": 3,
+      "availablecopies": 4,
       "status": "available",
       "location": "Shelf E-06"
     },
@@ -20,7 +20,7 @@
       "category": "API Design",
       "publicationyear": 2021,
       "totalcopies": 8,
-      "availablecopies": 7,
+      "availablecopies": 3,
       "status": "available",
       "location": "Shelf R-19"
     },
@@ -500,8 +500,8 @@
       "category": "Design Patterns",
       "publicationyear": 2022,
       "totalcopies": 3,
-      "availablecopies": 3,
-      "status": "available",
+      "availablecopies": 0,
+      "status": "unavailable",
       "location": "Shelf J-07"
     },
     {
@@ -13544,7 +13544,7 @@
       "category": "Science Fiction",
       "publicationyear": 2020,
       "totalcopies": 7,
-      "availablecopies": 6,
+      "availablecopies": 7,
       "status": "available",
       "location": "Shelf R-10"
     },

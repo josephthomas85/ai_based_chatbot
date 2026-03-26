@@ -468,7 +468,7 @@
                 <h1><i data-lucide="bot"></i> Library AI Assistant</h1>
             </div>
             <div class="navbar-right">
-                <a href="{{ url_for('home_page') }}" class="btn-notification" title="Home" style="text-decoration:none;">
+                <a href="{{ url_for('home') }}" class="btn-notification" title="Home" style="text-decoration:none;">
                     <i data-lucide="layout-dashboard"></i>
                 </a>
                 <a href="{{ url_for('notifications_page') }}" class="btn-notification" title="Notifications">
@@ -493,7 +493,7 @@
             <div class="sidebar-item" onclick="window.location.href='{{ url_for('recommendations_page') }}'">
                 <i data-lucide="sparkles"></i> Recommendations
             </div>
-            <div class="sidebar-item" onclick="window.location.href='{{ url_for('history_page') }}'">
+            <div class="sidebar-item" onclick="window.location.href='{{ url_for('history') }}'">
                 <i data-lucide="history"></i> Borrow History
             </div>
             <div class="sidebar-item" onclick="window.location.href='{{ url_for('overdue_page') }}'">
@@ -514,7 +514,7 @@
                     <i data-lucide="book-minus" style="width:13px;height:13px;margin-right:6px;vertical-align:middle;"></i> Return a Book
                 </button>
                 <button class="quick-action-chip" onclick="sendQuickMessage('Show my borrowed books')">
-                    <i data-lucide="list" style="width:13px;height:13px;margin-right:6px;vertical-align:middle;"></i> My Active Loans
+                    <i data-lucide="list" style="width:13px;height:13px;margin-right:6px;vertical-align:middle;"></i> My Books
                 </button>
                 <button class="quick-action-chip" onclick="sendQuickMessage('Recommend me books')">
                     <i data-lucide="star" style="width:13px;height:13px;margin-right:6px;vertical-align:middle;"></i> Get Recommendations
@@ -547,7 +547,7 @@
                         <div class="suggestion-chips">
                             <button class="chip" onclick="sendQuickMessage('Show all books')">Browse books</button>
                             <button class="chip" onclick="sendQuickMessage('Borrow a book')">Borrow a book</button>
-                            <button class="chip" onclick="sendQuickMessage('My books')">My loans</button>
+                            <button class="chip" onclick="sendQuickMessage('My books')">My books</button>
                             <button class="chip" onclick="sendQuickMessage('Recommend me books')">Recommendations</button>
                         </div>
                         <div class="timestamp">Just now</div>

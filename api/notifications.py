@@ -2,7 +2,7 @@ import json
 from flask import request, jsonify, session
 from datetime import datetime, timedelta
 from config import Config
-from api.auth import require_login, load_users
+from api.auth import require_login, load_users, save_users
 
 # Notification data helpers
 
@@ -118,25 +118,78 @@ def get_notifications():
         except FileNotFoundError:
             return {"transactions": []}
 
+    def save_transactions(data):
+        with open(Config.TRANSACTIONS_DB, 'w') as f:
+            json.dump(data, f, indent=2)
+
     books_data = load_books()
     tr_data = load_transactions()
+    users_data = load_users()
     now = datetime.now().date()
+    
+    databases_updated = False
+    
     for t in tr_data['transactions']:
         if t['userid'] == userid and t['status'] == 'borrowed':
             try:
                 due = datetime.fromisoformat(t['duedate']).date()
             except Exception:
                 due = datetime.strptime(t['duedate'], '%Y-%m-%d').date()
-            if due <= now + timedelta(days=3):
-                book = next((b for b in books_data['books'] if b['bookid'] == t['bookid']), None)
-                if book:
-                    user_notifs.append({
-                        "id": f"due-{t['transactionid']}",
-                        "userid": userid,
-                        "message": f"Reminder: '{book['title']}' is due on {t['duedate']}",
-                        "read": False,
-                        "timestamp": t['duedate']
-                    })
+            
+            days_left = (due - now).days
+            
+            book = next((b for b in books_data['books'] if b['bookid'] == t['bookid']), None)
+            if not book:
+                continue
+
+            if days_left > 0:
+                msg = f"Daily Reminder: '{book['title']}' is due in {days_left} days ({t['duedate']})"
+            elif days_left == 0:
+                msg = f"URGENT: '{book['title']}' is due TODAY! Please return it."
+            else:
+                msg = f"OVERDUE: '{book['title']}' was due {abs(days_left)} days ago!"
+                
+                # Fines Calculation
+                last_fine = t.get('last_fine_date')
+                if last_fine != now.isoformat():
+                    fine_amount = 1 # $1 per day
+                    
+                    if last_fine:
+                        try:
+                            last_fine_dt = datetime.fromisoformat(last_fine).date()
+                        except Exception:
+                            last_fine_dt = datetime.strptime(last_fine, '%Y-%m-%d').date()
+                        days_to_fine = (now - last_fine_dt).days
+                    else:
+                        days_to_fine = (now - due).days
+                    
+                    if days_to_fine > 0:
+                        total_fine = days_to_fine * fine_amount
+                        t['last_fine_date'] = now.isoformat()
+                        
+                        # Add fine to user's unpaid_fines
+                        for u in users_data['users']:
+                            if u['userid'] == userid:
+                                current_fines = float(u.get('unpaid_fines', 0))
+                                u['unpaid_fines'] = current_fines + total_fine
+                                break
+                        
+                        databases_updated = True
+
+            # Add the date to the ID so it creates a unique notification each day
+            # This effectively gives them a new daily notification
+            notif_id = f"due-{t['transactionid']}-{now.strftime('%Y%m%d')}"
+            user_notifs.append({
+                "id": notif_id,
+                "userid": userid,
+                "message": msg,
+                "read": False,
+                "timestamp": t['duedate']
+            })
+
+    if databases_updated:
+        save_users(users_data)
+        save_transactions(tr_data)
 
     return jsonify({"success": True, "notifications": user_notifs}), 200
 

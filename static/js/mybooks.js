@@ -112,10 +112,14 @@ function displayBooks(books) {
             statusClass = 'status-due-soon'; // Using a distinct color from existing ones or same as due-soon
             statusText = 'Awaiting Collection';
             subText = `Please collect by: <strong>${formatDate(book.pickup_deadline)}</strong>`;
-        } else if (book.status === 'requested' || book.status === 'queued') {
+        } else if (book.status === 'queued') {
+            statusClass = 'status-due-soon'; // Orange/Yellow badge
+            statusText = 'WAITLISTED';
+            subText = 'In Queue (Pending Return)';
+        } else if (book.status === 'requested') {
             statusClass = 'status-normal';
-            statusText = book.status.toUpperCase();
-            subText = 'Processing...';
+            statusText = 'REQUESTED';
+            subText = 'Awaiting Staff Approval';
         } else {
             if (daysUntilDue < 0) {
                 statusClass = 'status-overdue';

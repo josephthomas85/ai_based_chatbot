@@ -210,12 +210,13 @@ def return_book():
                     break
             
             if queued_request:
-                # Automate next in line
-                queued_request['status'] = 'requested'
-                # Count stays reduced (or technically: return makes it 1, next in line makes it 0)
-                # So we just don't increment availablecopies.
-                add_notification(queued_request['userid'], f"Good news! '{b['title']}' is now available for you. The librarian will approve it shortly.")
-                notify_staff(f"FIFO Alert: '{b['title']}' is now reserved for queued user {queued_request['userid']}. Please approve.")
+                # Automate next in line (bypass manual staff approval)
+                queued_request['status'] = 'approved'
+                # Grant exactly 24 hours to pick up the book
+                queued_request['pickup_deadline'] = (datetime.now() + timedelta(hours=24)).strftime('%Y-%m-%d %H:%M:%S')
+                # Count stays reduced
+                add_notification(queued_request['userid'], f"Good news! Your waitlisted book '{b['title']}' is now available and reserved for you. You have exactly 24 hours to collect it from the librarian.")
+                notify_staff(f"FIFO Alert: '{b['title']}' has been automatically reserved for waitlisted user {queued_request['userid']} for 24 hours.")
             else:
                 books_data['books'][i]['availablecopies'] += 1
                 books_data['books'][i]['status'] = 'available'

@@ -169,6 +169,23 @@ def unauthorized(error):
 @app.context_processor
 def inject_user():
     """Make user info available in templates"""
+    userid = session.get('userid')
+    if userid:
+        try:
+            import json
+            with open(Config.USERS_DB, 'r') as f:
+                users_data = json.load(f)
+                user = next((u for u in users_data.get('users', []) if u['userid'] == userid), None)
+                if user:
+                    return {
+                        'userid': userid,
+                        'username': user.get('username'),
+                        'fullname': user.get('fullname'),
+                        'unpaid_fines': user.get('unpaid_fines', 0)
+                    }
+        except Exception as e:
+            app.logger.error(f"Error fetching live user data: {e}")
+            
     return {
         'userid': session.get('userid'),
         'username': session.get('username'),

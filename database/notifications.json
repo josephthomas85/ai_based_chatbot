@@ -76,6 +76,195 @@
       "message": "Your request for 'Ultimate Redis' has been APPROVED! Please collect the book from the library by 2026-03-24. Your request will be automatically cancelled if not collected by this date.",
       "read": false,
       "timestamp": "2026-03-23T14:14:21.110213"
+    },
+    {
+      "id": "NTF012",
+      "userid": "USR001",
+      "message": "Book collected! 'Ultimate Redis' is now checked out to you. Due date: 2026-04-25.",
+      "read": false,
+      "timestamp": "2026-03-26T00:02:05.736490"
+    },
+    {
+      "id": "NTF013",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Deep Dive into Rust' by user USR003",
+      "read": false,
+      "timestamp": "2026-03-26T00:38:14.240010"
+    },
+    {
+      "id": "NTF014",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Ultimate Redis' by user USR033",
+      "read": false,
+      "timestamp": "2026-03-26T01:28:44.481978"
+    },
+    {
+      "id": "NTF015",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Complete AWS' by user USR034",
+      "read": false,
+      "timestamp": "2026-03-26T01:30:47.183032"
+    },
+    {
+      "id": "NTF016",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Complete AWS' by user USR035",
+      "read": false,
+      "timestamp": "2026-03-26T01:34:27.317380"
+    },
+    {
+      "id": "NTF017",
+      "userid": "USR035",
+      "message": "Your request for 'Complete AWS' has been APPROVED! Please collect the book from the library by 2026-03-27. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-26T01:34:27.332798"
+    },
+    {
+      "id": "NTF018",
+      "userid": "USR035",
+      "message": "Book collected! 'Complete AWS' is now checked out to you. Due date: 2026-04-25.",
+      "read": false,
+      "timestamp": "2026-03-26T01:34:27.337227"
+    },
+    {
+      "id": "NTF019",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Complete AWS' by user USR036",
+      "read": false,
+      "timestamp": "2026-03-26T01:35:41.696034"
+    },
+    {
+      "id": "NTF020",
+      "userid": "USR036",
+      "message": "Your request for 'Complete AWS' has been APPROVED! Please collect the book from the library by 2026-03-27. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-26T01:35:41.710868"
+    },
+    {
+      "id": "NTF021",
+      "userid": "USR036",
+      "message": "Book collected! 'Complete AWS' is now checked out to you. Due date: 2026-04-25.",
+      "read": false,
+      "timestamp": "2026-03-26T01:35:41.715529"
+    },
+    {
+      "id": "NTF022",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Complete AWS' by user USR037",
+      "read": false,
+      "timestamp": "2026-03-26T01:36:06.965843"
+    },
+    {
+      "id": "NTF023",
+      "userid": "USR037",
+      "message": "Your request for 'Complete AWS' has been APPROVED! Please collect the book from the library by 2026-03-27. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-26T01:36:06.980352"
+    },
+    {
+      "id": "NTF024",
+      "userid": "USR037",
+      "message": "Book collected! 'Complete AWS' is now checked out to you. Due date: 2026-04-25.",
+      "read": false,
+      "timestamp": "2026-03-26T01:36:06.984813"
+    },
+    {
+      "id": "NTF025",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Complete AWS' by user USR038",
+      "read": false,
+      "timestamp": "2026-03-26T01:37:27.805719"
+    },
+    {
+      "id": "NTF026",
+      "userid": "USR038",
+      "message": "Your request for 'Complete AWS' has been APPROVED! Please collect the book from the library by 2026-03-27. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-26T01:37:27.821696"
+    },
+    {
+      "id": "NTF027",
+      "userid": "USR038",
+      "message": "Book collected! 'Complete AWS' is now checked out to you. Due date: 2026-04-25.",
+      "read": false,
+      "timestamp": "2026-03-26T01:37:27.827323"
+    },
+    {
+      "id": "NTF028",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Ultimate Redis' by user USR039",
+      "read": false,
+      "timestamp": "2026-03-26T01:38:38.444524"
+    },
+    {
+      "id": "NTF029",
+      "userid": "USR039",
+      "message": "Your request for 'Ultimate Redis' has been APPROVED! Please collect the book from the library by 2026-03-27. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-26T01:38:38.459571"
+    },
+    {
+      "id": "NTF030",
+      "userid": "USR039",
+      "message": "Book collected! 'Ultimate Redis' is now checked out to you. Due date: 2026-04-25.",
+      "read": false,
+      "timestamp": "2026-03-26T01:38:38.464276"
+    },
+    {
+      "id": "NTF031",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Ultimate Redis' by user USR040",
+      "read": false,
+      "timestamp": "2026-03-26T01:39:16.299251"
+    },
+    {
+      "id": "NTF032",
+      "userid": "USR040",
+      "message": "Your request for 'Ultimate Redis' has been APPROVED! Please collect the book from the library by 2026-03-27. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-26T01:39:16.314201"
+    },
+    {
+      "id": "NTF033",
+      "userid": "USR040",
+      "message": "Book collected! 'Ultimate Redis' is now checked out to you. Due date: 2026-04-25.",
+      "read": false,
+      "timestamp": "2026-03-26T01:39:16.318720"
+    },
+    {
+      "id": "NTF034",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Ultimate Redis' by user USR041",
+      "read": false,
+      "timestamp": "2026-03-26T01:40:29.433402"
+    },
+    {
+      "id": "NTF035",
+      "userid": "USR041",
+      "message": "Your request for 'Ultimate Redis' has been APPROVED! Please collect the book from the library by 2026-03-27. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-26T01:40:29.448457"
+    },
+    {
+      "id": "NTF036",
+      "userid": "USR041",
+      "message": "Book collected! 'Ultimate Redis' is now checked out to you. Due date: 2026-04-25.",
+      "read": false,
+      "timestamp": "2026-03-26T01:40:29.453250"
+    },
+    {
+      "id": "NTF037",
+      "userid": "USR003",
+      "message": "Your request for 'Deep Dive into Rust' has been APPROVED! Please collect the book from the library by 2026-03-27. Your request will be automatically cancelled if not collected by this date.",
+      "read": true,
+      "timestamp": "2026-03-26T08:27:53.977760"
+    },
+    {
+      "id": "NTF038",
+      "userid": "USR003",
+      "message": "Book collected! 'Deep Dive into Rust' is now checked out to you. Due date: 2026-04-25.",
+      "read": true,
+      "timestamp": "2026-03-26T11:00:04.667335"
     }
   ],
   "watchers": [
@@ -103,6 +292,31 @@
       "userid": "USR023",
       "bookid": "BK00021",
       "requested_on": "2026-03-21T11:46:03.112534"
+    },
+    {
+      "userid": "USR026",
+      "bookid": "BK00042",
+      "requested_on": "2026-03-26T00:52:51.907811"
+    },
+    {
+      "userid": "USR036",
+      "bookid": "BK00042",
+      "requested_on": "2026-03-26T01:35:41.729266"
+    },
+    {
+      "userid": "USR037",
+      "bookid": "BK00042",
+      "requested_on": "2026-03-26T01:36:06.995597"
+    },
+    {
+      "userid": "USR038",
+      "bookid": "BK00042",
+      "requested_on": "2026-03-26T01:37:27.839880"
+    },
+    {
+      "userid": "USR003",
+      "bookid": "BK00001",
+      "requested_on": "2026-03-26T09:44:14.287733"
     }
   ]
 }

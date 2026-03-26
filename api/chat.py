@@ -64,6 +64,11 @@ def chat():
         "context": ""
     }
     
+    # ESCAPE HATCH: If the user provides a very clear command (like clicking a Quick Action),
+    # we should break out of the current context and handle the new command.
+    if intent != "unknown" and confidence >= 0.8:
+        context = ""
+
     # PRIORITY 1: Handle context-based workflows first
     # If user is in a conversation context, prioritize that over intent recognition
     
@@ -95,23 +100,14 @@ def chat():
         book = nlp_processor.find_book_by_name(books_data['books'], book_name)
         
         if book:
+            transactions_data = load_transactions()
+            transactionid = f"TRN{str(len(transactions_data['transactions']) + 1).zfill(3)}"
+            borrowdate = datetime.now().strftime('%Y-%m-%d')
+            duedate = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
+            
             if book['availablecopies'] > 0:
-                # Process the borrow
-                transactions_data = load_transactions()
-                transactionid = f"TRN{str(len(transactions_data['transactions']) + 1).zfill(3)}"
-                borrowdate = datetime.now().strftime('%Y-%m-%d')
-                duedate = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
-                
-                # Create transaction
-                transaction = {
-                    "transactionid": transactionid,
-                    "userid": userid,
-                    "bookid": book['bookid'],
-                    "borrowdate": borrowdate,
-                    "duedate": duedate,
-                    "returndate": None,
-                    "status": "borrowed"
-                }
+                status = "borrowed"
+                response_message = f"✓ Book borrowed successfully!\n\n📚 Title: {book['title']}\n✍️ Author: {book['author']}\n👤 Borrowed by: {username}\n📅 Due date: {duedate}"
                 
                 # Update book availability
                 for i, b in enumerate(books_data['books']):
@@ -120,30 +116,40 @@ def chat():
                         if books_data['books'][i]['availablecopies'] == 0:
                             books_data['books'][i]['status'] = 'unavailable'
                         break
-                
-                # Save changes
-                transactions_data['transactions'].append(transaction)
-                save_books(books_data)
-                save_transactions(transactions_data)
-                
-                response_data["response"] = f"✓ Book borrowed successfully!\n\n📚 Title: {book['title']}\n✍️ Author: {book['author']}\n👤 Borrowed by: {username}\n📅 Due date: {duedate}"
-                response_data["data"] = [{
-                    "bookid": book['bookid'],
-                    "title": book['title'],
-                    "author": book['author'],
-                    "borrowedby": username,
-                    "borrowdate": borrowdate,
-                    "duedate": duedate,
-                    "availablecopies": books_data['books'][[idx for idx, b in enumerate(books_data['books']) if b['bookid'] == book['bookid']][0]]['availablecopies']
-                }]
-                response_data["suggestions"] = ["Borrow another book", "View my books", "Show all books"]
-                response_data["context"] = ""
             else:
-                response_data["response"] = f"Sorry, '{book['title']}' is not currently available. All copies are borrowed."
-                # user might want to know when it comes back
+                status = "queued"
+                response_message = f"⏳ You have successfully joined the waitlist for '{book['title']}'!\n\nWe will reserve it for you for 24 hours as soon as it is returned."
                 add_watcher(userid, book['bookid'])
-                response_data["suggestions"] = ["Show available books", "Search another book"]
-                response_data["context"] = "waiting_for_book"
+            
+            # Create transaction
+            transaction = {
+                "transactionid": transactionid,
+                "userid": userid,
+                "bookid": book['bookid'],
+                "borrowdate": borrowdate,
+                "duedate": duedate,
+                "returndate": None,
+                "status": status
+            }
+            
+            # Save changes
+            transactions_data['transactions'].append(transaction)
+            save_books(books_data)
+            save_transactions(transactions_data)
+            
+            response_data["response"] = response_message
+            response_data["data"] = [{
+                "bookid": book['bookid'],
+                "title": book['title'],
+                "author": book['author'],
+                "borrowedby": username,
+                "borrowdate": borrowdate,
+                "duedate": duedate,
+                "status": status,
+                "availablecopies": books_data['books'][[idx for idx, b in enumerate(books_data['books']) if b['bookid'] == book['bookid']][0]]['availablecopies']
+            }]
+            response_data["suggestions"] = ["View my books", "Show all books", "Return a book"]
+            response_data["context"] = ""
             return jsonify(response_data), 200
         else:
             available_books = [b for b in books_data['books'] if b['availablecopies'] > 0]
@@ -377,46 +383,52 @@ def chat():
                 borrowed = True
 
         if borrowed and book:
+            transactions_data = load_transactions()
+            transactionid = f"TRN{str(len(transactions_data['transactions']) + 1).zfill(3)}"
+            borrowdate = datetime.now().strftime('%Y-%m-%d')
+            duedate = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
+            
             if book['availablecopies'] > 0:
-                transactions_data = load_transactions()
-                transactionid = f"TRN{str(len(transactions_data['transactions']) + 1).zfill(3)}"
-                borrowdate = datetime.now().strftime('%Y-%m-%d')
-                duedate = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
-                transaction = {
-                    "transactionid": transactionid,
-                    "userid": userid,
-                    "bookid": book['bookid'],
-                    "borrowdate": borrowdate,
-                    "duedate": duedate,
-                    "returndate": None,
-                    "status": "borrowed"
-                }
+                status = "borrowed"
+                response_message = f"✓ Book borrowed successfully!\n\n📚 Title: {book['title']}\n✍️ Author: {book['author']}\n👤 Borrowed by: {username}\n📅 Due date: {duedate}"
+                
                 for i, b in enumerate(books_data['books']):
                     if b['bookid'] == book['bookid']:
                         books_data['books'][i]['availablecopies'] -= 1
                         if books_data['books'][i]['availablecopies'] == 0:
                             books_data['books'][i]['status'] = 'unavailable'
                         break
-                transactions_data['transactions'].append(transaction)
-                save_books(books_data)
-                save_transactions(transactions_data)
-                response_data["response"] = f"✓ Book borrowed successfully!\n\n📚 Title: {book['title']}\n✍️ Author: {book['author']}\n👤 Borrowed by: {username}\n📅 Due date: {duedate}"
-                response_data["data"] = [{
-                    "bookid": book['bookid'],
-                    "title": book['title'],
-                    "author": book['author'],
-                    "borrowedby": username,
-                    "borrowdate": borrowdate,
-                    "duedate": duedate
-                }]
-                response_data["suggestions"] = ["Borrow another book", "View my books", "Show all books"]
-                response_data["context"] = ""
             else:
-                # book exists but no copies
+                status = "queued"
+                response_message = f"⏳ You have successfully joined the waitlist for '{book['title']}'!\n\nWe will reserve it for you for 24 hours as soon as it is returned."
                 add_watcher(userid, book['bookid'])
-                response_data["response"] = f"Sorry, '{book['title']}' is not currently available. All copies are borrowed."
-                response_data["suggestions"] = ["Show available books", "Search another book"]
-                response_data["context"] = ""
+                
+            transaction = {
+                "transactionid": transactionid,
+                "userid": userid,
+                "bookid": book['bookid'],
+                "borrowdate": borrowdate,
+                "duedate": duedate,
+                "returndate": None,
+                "status": status
+            }
+            
+            transactions_data['transactions'].append(transaction)
+            save_books(books_data)
+            save_transactions(transactions_data)
+            
+            response_data["response"] = response_message
+            response_data["data"] = [{
+                "bookid": book['bookid'],
+                "title": book['title'],
+                "author": book['author'],
+                "borrowedby": username,
+                "borrowdate": borrowdate,
+                "duedate": duedate,
+                "status": status
+            }]
+            response_data["suggestions"] = ["View my books", "Show all books", "Return a book"]
+            response_data["context"] = ""
             return jsonify(response_data), 200
 
         # fallback: show list and set context
@@ -462,10 +474,16 @@ def chat():
         # helper to find return candidate in user's list
         def find_borrowed(name):
             name = name.strip().lower()
+            from nlp.intents import STOP_WORDS
+            search_words = set(w for w in name.split() if w not in STOP_WORDS and len(w) > 2)
+            
             for borrowed in user_borrowed:
-                if (name in borrowed['title'].lower() or 
-                    borrowed['title'].lower() in name or
-                    any(word in borrowed['title'].lower() for word in name.split())):
+                title_lower = borrowed['title'].lower()
+                if name in title_lower or title_lower in name:
+                    return borrowed
+                
+                title_words = set(w.strip('.,!?()[]"') for w in title_lower.split() if w not in STOP_WORDS)
+                if search_words and (search_words & title_words):
                     return borrowed
             return None
 
