@@ -1,10 +1,13 @@
 import json
+import random
 from flask import request, jsonify, session
 from datetime import datetime, timedelta
 from config import Config
 from api.auth import require_login
 from api.notifications import add_watcher, notify_watchers
+from api.books import count_active_borrows
 from nlp.processor import NLPProcessor
+from nlp.summarizer import summarize_book, extract_book_name_from_query, extract_line_count
 
 # Initialize NLP processor
 nlp_processor = NLPProcessor()
@@ -35,9 +38,48 @@ def save_transactions(data):
     with open(Config.TRANSACTIONS_DB, 'w') as f:
         json.dump(data, f, indent=2)
 
+# Session-based conversational memory (cleared on logout)
+USER_CHAT_MEMORY = {}
+
 # POST /api/chat
 @require_login
 def chat():
+    # Execute the core bot logic
+    response_tuple = _chat_internal()
+    if len(response_tuple) != 2:
+        return response_tuple
+        
+    response_obj, status_code = response_tuple
+    
+    # Extract the actual json returned to the client
+    response_data = response_obj.get_json()
+    if not isinstance(response_data, dict):
+        return response_tuple
+
+    # Retrieve user session data 
+    userid = session.get('userid')
+    if not userid: return response_tuple
+    
+    data = request.get_json()
+    message = data.get('message', '').strip()
+    
+    bot_response = response_data.get('response', '')
+    
+    # Store in memory sliding window
+    if message and bot_response:
+        if userid not in USER_CHAT_MEMORY:
+            USER_CHAT_MEMORY[userid] = []
+            
+        USER_CHAT_MEMORY[userid].append({"role": "user", "content": message})
+        USER_CHAT_MEMORY[userid].append({"role": "assistant", "content": bot_response})
+        
+        # Keep only the last 10 messages (5 interactions) per user
+        if len(USER_CHAT_MEMORY[userid]) > 10:
+            USER_CHAT_MEMORY[userid] = USER_CHAT_MEMORY[userid][-10:]
+            
+    return response_tuple
+
+def _chat_internal():
     data = request.get_json()
     message = data.get('message', '').strip()
     userid = session['userid']
@@ -50,7 +92,9 @@ def chat():
     # Process message with NLP
     nlp_result = nlp_processor.process_message(message)
     intent = nlp_result['intent']
-    entities = nlp_result['entities']
+    extracted_book = nlp_result.get('book_title')
+    extracted_branch = nlp_result.get('branch')  # e.g. 'CSE', 'ECE'
+    extracted_semester = nlp_result.get('semester')  # e.g. 'S3', 'S5'
     confidence = nlp_result['confidence']
     
     books_data = load_books()
@@ -96,13 +140,45 @@ def chat():
             response_data["context"] = "waiting_for_book"
             return jsonify(response_data), 200
 
-        # Try to find the book
-        book = nlp_processor.find_book_by_name(books_data['books'], book_name)
-        
-        if book:
+        if book_name:
             transactions_data = load_transactions()
-            transactionid = f"TRN{str(len(transactions_data['transactions']) + 1).zfill(3)}"
-            borrowdate = datetime.now().strftime('%Y-%m-%d')
+            
+            # Enforce 5-book limit
+            if count_active_borrows(userid, transactions_data) >= 5:
+                response_data["response"] = (
+                    "I'm sorry, you've reached your limit of 5 books. 📚\n\n"
+                    "You'll need to return one of your current books before you can borrow another. "
+                    "Would you like to see your current books?"
+                )
+                response_data["suggestions"] = ["View my books", "Return a book", "Show all books"]
+                response_data["context"] = ""
+                return jsonify(response_data), 200
+
+            # Find the book
+            book = nlp_processor.find_book_by_name(books_data['books'], book_name)
+            if not book:
+                response_data["response"] = f"I couldn't find a book named '{book_name}'. Please try searching again or choose from the catalog."
+                response_data["suggestions"] = ["Show all books", "Search for a book"]
+                response_data["context"] = ""
+                return jsonify(response_data), 200
+
+            # Prevent duplicate borrowing of the same book
+            active_statuses = ['borrowed', 'requested', 'queued', 'approved', 'pending_return']
+            for t in transactions_data['transactions']:
+                if t['userid'] == userid and t['bookid'] == book['bookid'] and t['status'] in active_statuses:
+                    response_data["response"] = (
+                        f"I'm sorry, you already have an active request or a borrowed copy for **'{book['title']}'**. 📚\n\n"
+                        "You can see your borrowed books by typing 'my books'."
+                    )
+                    response_data["suggestions"] = ["View my books", "Show all books"]
+                    response_data["context"] = ""
+                    return jsonify(response_data), 200
+
+            # Generate a truly unique transaction ID (Date_Time_Random)
+            now = datetime.now()
+            transactionid = f"T{now.strftime('%Y%m%d%H%M%S')}{random.randint(100, 999)}"
+            
+            borrowdate = now.strftime('%Y-%m-%d')
             duedate = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
             
             if book['availablecopies'] > 0:
@@ -288,12 +364,120 @@ def chat():
     # PRIORITY 2: Handle intent-based workflows
     # Handle different intents
     if intent == "greeting":
-        # Simple greeting response
         response_data["response"] = (
             f"Hello {username}! 👋\n"
             "How can I assist you with our library today?"
         )
-        response_data["suggestions"] = ["Show all books", "Search a book", "Borrow a book"]
+        response_data["suggestions"] = ["Show all books", "Search a book", "Borrow a book", "Books by semester"]
+    
+    elif intent == "semesterbooks":
+        branch = extracted_branch
+        semester = extracted_semester
+
+        VALID_BRANCHES = ["CSE", "ECE", "EEE", "ME", "CIVIL", "AUTOMOBILE", "COMMON", "COMMON (ALL BRANCHES)"]
+        SEMESTER_ALIASES = {
+            "S1": "S1", "S2": "S2", "S3": "S3", "S4": "S4",
+            "S5": "S5", "S6": "S6", "S7": "S7", "S8": "S8"
+        }
+
+        # Fallback: try to parse branch/semester from raw message if LLM missed them
+        if not branch or not semester:
+            msg_upper = message.upper()
+            for b in VALID_BRANCHES:
+                if b in msg_upper:
+                    branch = b
+                    break
+            for s in ["S1","S2","S3","S4","S5","S6","S7","S8"]:
+                if s in msg_upper:
+                    semester = s
+                    break
+            # handle numeric references like '3rd semester'
+            sem_map = {"1ST":"S1","2ND":"S2","3RD":"S3","4TH":"S4","5TH":"S5","6TH":"S6","7TH":"S7","8TH":"S8",
+                       "FIRST":"S1","SECOND":"S2","THIRD":"S3","FOURTH":"S4",
+                       "FIFTH":"S5","SIXTH":"S6","SEVENTH":"S7","EIGHTH":"S8"}
+            for k, v in sem_map.items():
+                if k in msg_upper and not semester:
+                    semester = v
+                    break
+
+        if not branch and not semester:
+            response_data["response"] = (
+                "Sure! Please tell me your **branch** and **semester**.\n"
+                "For example: *'CSE S3 books'* or *'ECE 5th semester books'*"
+            )
+            response_data["suggestions"] = ["CSE S3 books", "ECE S5 books", "ME S4 books", "CIVIL S6 books"]
+            response_data["context"] = ""
+            return jsonify(response_data), 200
+
+        # Normalise branch to match category format
+        if branch == "COMMON":
+            branch = "COMMON (ALL BRANCHES)"
+
+        # Semesters S1 and S2 are shared across all branches as COMMON
+        COMMON_SEMESTERS = {"S1", "S2"}
+
+        # Build the category string to match against database
+        if branch and semester:
+            category_key = f"{branch} - {semester}"
+        elif semester:
+            category_key = semester
+        else:
+            category_key = branch
+
+        matched_books = [
+            b for b in books_data['books']
+            if category_key.lower() in b.get('category', '').lower()
+        ]
+
+        # For S1 and S2: always use COMMON (ALL BRANCHES) as the primary source
+        # since those semesters are shared across all branches.
+        fallback_used = False
+        if semester in COMMON_SEMESTERS and branch and branch != "COMMON (ALL BRANCHES)":
+            common_key = f"COMMON (ALL BRANCHES) - {semester}"
+            common_books = [
+                b for b in books_data['books']
+                if common_key.lower() in b.get('category', '').lower()
+            ]
+            if common_books:
+                # Merge: common books + any branch-specific ones not already included
+                existing_ids = {b['bookid'] for b in common_books}
+                extras = [b for b in matched_books if b['bookid'] not in existing_ids]
+                matched_books = common_books + extras
+                fallback_used = True
+                category_key = common_key
+
+        if matched_books:
+            if fallback_used:
+                response_data["response"] = (
+                    f"📚 **{semester}** is a common semester shared by all branches.\n\n"
+                    f"Here are the **{semester}** books ({len(matched_books)} found):"
+                )
+            else:
+                label = f"{branch or ''} {semester or ''}".replace("COMMON (ALL BRANCHES)", "Common").strip()
+                response_data["response"] = f"📚 Here are the **{label}** books in our library ({len(matched_books)} found):"
+            response_data["data"] = [
+                {
+                    "bookid": b['bookid'],
+                    "title": b['title'],
+                    "author": b['author'],
+                    "status": b['status'],
+                    "availablecopies": b['availablecopies'],
+                    "category": b.get('category', '')
+                }
+                for b in matched_books
+            ]
+            response_data["suggestions"] = ["Borrow a book", "Search a book", "Show all books"]
+        else:
+            response_data["response"] = (
+                f"I couldn't find books for **{category_key}** in our catalog.\n"
+                "Try a different branch or semester.\n\n"
+                "Available branches: **CSE, ECE, EEE, ME, CIVIL, AUTOMOBILE**\n"
+                "Semesters: **S1 through S8**"
+            )
+            response_data["suggestions"] = ["CSE S3 books", "ECE S5 books", "ME S4 books", "Show all books"]
+        response_data["context"] = ""
+        return jsonify(response_data), 200
+
     elif intent == "showallbooks":
         # list every book, including those currently out of stock
         all_books = books_data['books']
@@ -313,7 +497,7 @@ def chat():
     elif intent == "searchbook":
         # Search for books by title or author. If the user provides a specific
         # name we return availability information directly.
-        search_term = ' '.join(entities).lower() if entities else message.lower()
+        search_term = extracted_book if extracted_book else message.strip()
         # try to match a single book using the same logic used for borrowing
         direct = nlp_processor.find_book_by_name(books_data['books'], search_term)
         if direct:
@@ -361,32 +545,45 @@ def chat():
     elif intent == "borrowbook":
         # Attempt to borrow immediately if the message includes a title
         def try_borrow(name):
-            name = name.strip()
             if not name or len(name) < 2:
                 return None
             return nlp_processor.find_book_by_name(books_data['books'], name)
 
-        # remove the keyword "borrow" to see if a title follows
-        possible_name = message.lower().replace("borrow", "", 1).strip()
-        borrowed = False
-
-        # if we're already waiting for a book, handle exactly as before
+        # contexts handling
         if context == "waiting_for_book":
             book_name = message.strip()
             book = try_borrow(book_name)
-            if book:
-                borrowed = True
         else:
-            # try one-shot borrow
-            book = try_borrow(possible_name)
-            if book:
-                borrowed = True
+            book = try_borrow(extracted_book)
 
-        if borrowed and book:
+        if book:
             transactions_data = load_transactions()
-            transactionid = f"TRN{str(len(transactions_data['transactions']) + 1).zfill(3)}"
+            
+            # Enforce 5-book limit
+            if count_active_borrows(userid, transactions_data) >= 5:
+                response_data["response"] = (
+                    "I'm sorry, you've already reached your limit of 5 books. 📚\n\n"
+                    "Please return a book before taking another one. Would you like to see what you have borrowed?"
+                )
+                response_data["suggestions"] = ["View my books", "Return a book", "Show all books"]
+                response_data["context"] = ""
+                return jsonify(response_data), 200
+                
+            # Prevent duplicate borrowing of the same book
+            active_statuses = ['borrowed', 'requested', 'queued', 'approved', 'pending_return']
+            for t in transactions_data['transactions']:
+                if t['userid'] == userid and t['bookid'] == book['bookid'] and t['status'] in active_statuses:
+                    response_data["response"] = (
+                        f"I'm sorry, you already have an active request or a borrowed copy for **'{book['title']}'**. 📚\n\n"
+                        "You can see your borrowed books by typing 'my books'."
+                    )
+                    response_data["suggestions"] = ["View my books", "Show all books"]
+                    response_data["context"] = ""
+                    return jsonify(response_data), 200
+
             borrowdate = datetime.now().strftime('%Y-%m-%d')
             duedate = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
+            transactionid = f"T{datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(100, 999)}"
             
             if book['availablecopies'] > 0:
                 status = "borrowed"
@@ -429,6 +626,28 @@ def chat():
             }]
             response_data["suggestions"] = ["View my books", "Show all books", "Return a book"]
             response_data["context"] = ""
+            return jsonify(response_data), 200
+        else:
+            if context == "waiting_for_book":
+                response_data["response"] = f"I couldn't find a book named '{message.strip()}'. Please try searching again or choose from the catalog."
+                response_data["suggestions"] = ["Show all books", "Search for a book"]
+                response_data["context"] = ""
+            else:
+                # Regular borrow request without a name
+                available_books = [b for b in books_data['books'] if b['availablecopies'] > 0]
+                response_data["response"] = "Which book would you like to borrow? Here are some available titles:"
+                response_data["data"] = [
+                    {
+                        "bookid": b['bookid'],
+                        "title": b['title'],
+                        "author": b['author'],
+                        "status": b['status'],
+                        "availablecopies": b['availablecopies']
+                    }
+                    for b in available_books[:5]
+                ]
+                response_data["suggestions"] = ["Show all books", "Search for a book"]
+                response_data["context"] = "waiting_for_book"
             return jsonify(response_data), 200
 
         # fallback: show list and set context
@@ -473,16 +692,17 @@ def chat():
 
         # helper to find return candidate in user's list
         def find_borrowed(name):
+            if not name: return None
             name = name.strip().lower()
-            from nlp.intents import STOP_WORDS
-            search_words = set(w for w in name.split() if w not in STOP_WORDS and len(w) > 2)
+            basic_stopwords = {'a', 'an', 'the', 'is', 'at', 'which', 'on', 'for', 'book', 'please'}
+            search_words = set(w for w in name.split() if w not in basic_stopwords and len(w) > 2)
             
             for borrowed in user_borrowed:
                 title_lower = borrowed['title'].lower()
                 if name in title_lower or title_lower in name:
                     return borrowed
                 
-                title_words = set(w.strip('.,!?()[]"') for w in title_lower.split() if w not in STOP_WORDS)
+                title_words = set(w.strip('.,!?()[]"') for w in title_lower.split() if w not in basic_stopwords)
                 if search_words and (search_words & title_words):
                     return borrowed
             return None
@@ -491,16 +711,13 @@ def chat():
         returned_book = None
         transaction_to_update = None
         if context == "waiting_for_return":
-            book_name = message.replace("return", "").strip()
-            if not book_name or len(book_name) < 2:
-                book_name = message.lower()
+            book_name = extracted_book if extracted_book else message.strip()
             returned_book = find_borrowed(book_name)
             if returned_book:
                 transaction_to_update = returned_book['transaction']
         else:
             # one-shot return attempt
-            book_name_candidate = message.lower().replace("return", "", 1).strip()
-            returned_book = find_borrowed(book_name_candidate)
+            returned_book = find_borrowed(extracted_book)
             if returned_book:
                 transaction_to_update = returned_book['transaction']
 
@@ -588,23 +805,46 @@ def chat():
             response_data["suggestions"] = ["Borrow a book", "Show all books"]
     
     elif intent == "recommend":
-        # Simple recommendation: suggest books from popular categories or available books
-        # For now, recommend 3 random available books
+        # ── AI Personalized Recommendations ──────────────────────────────────
+        from nlp.ai_service import generate_ai_recommendations
+        
         available_books = [b for b in books_data['books'] if b['availablecopies'] > 0]
         if available_books:
-            # Simple recommendation: pick first 3 available books
-            recommendations = available_books[:3]
-            response_data["response"] = f"Here are some book recommendations for you:"
+            # 1. Gather user's past reading history
+            transactions_data = load_transactions()
+            user_history_titles = []
+            for tx in transactions_data.get('transactions', []):
+                if tx['userid'] == userid:
+                    # Find the title for this bookid
+                    for b in books_data['books']:
+                        if b['bookid'] == tx['bookid']:
+                            user_history_titles.append(b['title'])
+                            break
+            
+            # Deduplicate history
+            user_history_titles = list(set(user_history_titles))
+            
+            # 2. Get AI recommendations based on history
+            ai_result = generate_ai_recommendations(user_history_titles, available_books)
+            
+            # 3. Map returned bookids back to real book objects
+            recommended_books = []
+            for bid in ai_result["recommended_bookids"]:
+                for b in available_books:
+                    if b["bookid"] == bid:
+                        recommended_books.append(b)
+                        break
+            
+            response_data["response"] = f"**AI Recommendations:**\n\n{ai_result['explanation']}"
             response_data["data"] = [
                 {
                     "bookid": book['bookid'],
                     "title": book['title'],
                     "author": book['author'],
-                    "category": book.get('category', 'General'),
                     "status": book['status'],
                     "availablecopies": book['availablecopies']
                 }
-                for book in recommendations
+                for book in recommended_books
             ]
             response_data["suggestions"] = ["Borrow a book", "Show all books", "Search a book"]
         else:
@@ -621,9 +861,11 @@ def chat():
             "• **My books** — See your active loans\n"
             "• **Recommend books** — Get personalised reading suggestions\n"
             "• **History** — View your past borrowing history\n"
-            "• **Overdue** — Check if you have any overdue books"
+            "• **Overdue** — Check if you have any overdue books\n"
+            "• **Summarize [title]** — Get an AI-powered 5-line book summary\n"
+            "• **Explain [title] in 5 lines** — Same as above with custom line count"
         )
-        response_data["suggestions"] = ["Show all books", "Borrow a book", "My books", "Recommend books"]
+        response_data["suggestions"] = ["Show all books", "Borrow a book", "My books", "Summarize a book"]
 
     elif intent == "history":
         # Show full borrow history (returned + current)
@@ -685,12 +927,115 @@ def chat():
             response_data["response"] = "Great news! You have no overdue books."
             response_data["suggestions"] = ["My books", "Borrow a book"]
 
+    elif intent == "summarize":
+        # ── AI Book Summarization ──────────────────────────────────────────
+        # Get book name directly from LLM extraction
+        requested_name = extracted_book
+        line_count = extract_line_count(message)
+
+        # If no name extracted and we're in summarize context, use full message as name
+        if not requested_name and context == "waiting_for_summary":
+            requested_name = message.strip()
+
+        if requested_name:
+            book = nlp_processor.find_book_by_name(books_data['books'], requested_name)
+            if book:
+                summary = summarize_book(book, lines=line_count)
+                response_data["response"] = (
+                    f"**AI Book Summary** — {line_count}-line overview:\n\n{summary}"
+                )
+                response_data["data"] = [{
+                    "bookid": book["bookid"],
+                    "title": book["title"],
+                    "author": book["author"],
+                    "status": book["status"],
+                    "availablecopies": book["availablecopies"]
+                }]
+                response_data["suggestions"] = [
+                    f"Borrow {book['title']}",
+                    "Show all books",
+                    "Recommend books"
+                ]
+                response_data["context"] = ""
+            else:
+                response_data["response"] = (
+                    f"I couldn't find a book called **'{requested_name}'** in the library.\n"
+                    "Please try a different title, or type the exact book name:"
+                )
+                response_data["suggestions"] = ["Show all books", "Search a book"]
+                response_data["context"] = "waiting_for_summary"
+        else:
+            # No book name found — ask the user
+            available_books = [b for b in books_data['books'] if b['availablecopies'] > 0]
+            sample = [b['title'] for b in available_books[:4]]
+            response_data["response"] = (
+                "I can generate an AI summary for any book in the library!\n\n"
+                "Just type the book title and I'll give you a 5-line overview. Examples:\n"
+                "• *Explain Python Crash Course in 5 lines*\n"
+                "• *Summarize Clean Code*\n"
+                "• *What is Designing Data-Intensive Applications about?*"
+            )
+            response_data["suggestions"] = sample
+            response_data["context"] = "waiting_for_summary"
+
+    elif context == "waiting_for_summary":
+        # User typed a book name directly after we asked for one
+        requested_name = message.strip()
+        line_count = extract_line_count(message)
+        book = nlp_processor.find_book_by_name(books_data['books'], requested_name)
+        if book:
+            summary = summarize_book(book, lines=line_count)
+            response_data["response"] = (
+                f"🤖 **AI Book Summary** — {line_count}-line overview:\n\n{summary}"
+            )
+            response_data["data"] = [{
+                "bookid": book["bookid"],
+                "title": book["title"],
+                "author": book["author"],
+                "status": book["status"],
+                "availablecopies": book["availablecopies"]
+            }]
+            response_data["suggestions"] = [
+                f"Borrow {book['title']}",
+                "Show all books",
+                "Recommend books"
+            ]
+            response_data["context"] = ""
+        else:
+            response_data["response"] = (
+                f"I still couldn't find **'{requested_name}'**. Try a shorter or different title:"
+            )
+            response_data["suggestions"] = ["Show all books", "Search a book"]
+            response_data["context"] = "waiting_for_summary"
+
     else:
-        # Friendly fallback
-        response_data["response"] = (
-            f"I'm not sure I understood that, {username}. Here are some things I can help you with:"
+        # ── AI Conversational Fallback ───────────────────────────────────
+        # When intent is unknown, pass to Groq for a helpful response
+        from nlp.ai_service import generate_chat_response
+        
+        # Get a sample of available books (first 5 to keep context small)
+        available_books = [b for b in books_data['books'] if b['availablecopies'] > 0][:5]
+        
+        # Get user's current borrowed books
+        transactions_data = load_transactions()
+        user_history = []
+        for transaction in transactions_data['transactions']:
+            if transaction['userid'] == userid and transaction['status'] == 'borrowed':
+                for book in books_data['books']:
+                    if book['bookid'] == transaction['bookid']:
+                        user_history.append({'title': book['title']})
+                        break
+        
+        ai_reply = generate_chat_response(
+            message=message, 
+            username=username, 
+            user_history=user_history, 
+            available_books_sample=available_books,
+            chat_history=USER_CHAT_MEMORY.get(userid, [])
         )
-        response_data["suggestions"] = ["Show all books", "Borrow a book", "Search a book", "My books", "Recommend books", "Help"]
+        
+        response_data["response"] = ai_reply
+        response_data["suggestions"] = ["Show all books", "Search a book", "Borrow a book"]
     
     return jsonify(response_data), 200
 

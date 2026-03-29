@@ -109,11 +109,15 @@ function displayBooks(books) {
         let subText = '';
 
         if (book.status === 'approved') {
-            statusClass = 'status-due-soon'; // Using a distinct color from existing ones or same as due-soon
+            statusClass = 'status-due-soon';
             statusText = 'Awaiting Collection';
             subText = `Please collect by: <strong>${formatDate(book.pickup_deadline)}</strong>`;
+        } else if (book.status === 'pending_return') {
+            statusClass = 'status-due-soon';
+            statusText = 'PENDING RETURN';
+            subText = 'Awaiting staff approval to return';
         } else if (book.status === 'queued') {
-            statusClass = 'status-due-soon'; // Orange/Yellow badge
+            statusClass = 'status-due-soon';
             statusText = 'WAITLISTED';
             subText = 'In Queue (Pending Return)';
         } else if (book.status === 'requested') {
@@ -169,9 +173,9 @@ async function returnBook(bookid) {
         const data = await response.json();
 
         if (data.success) {
-            alert('Book returned successfully!');
-            loadMyBooks(); // Refresh books list
-            loadNotifications(); // Refresh notifications
+            alert(data.message || 'Return request submitted! Awaiting staff approval.');
+            loadMyBooks();
+            loadNotifications();
         } else {
             alert(data.message || 'Failed to return book');
         }

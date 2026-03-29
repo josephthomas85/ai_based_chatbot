@@ -66,6 +66,14 @@ def login():
 
 # POST /api/logout
 def logout():
+    userid = session.get('userid')
+    if userid:
+        try:
+            from api.chat import USER_CHAT_MEMORY
+            USER_CHAT_MEMORY.pop(userid, None)
+        except Exception as e:
+            pass
+
     session.clear()
     return jsonify({"success": True, "message": "Logged out successfully"}), 200
 

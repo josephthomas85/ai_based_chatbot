@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Staff Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/staff.css') }}?v=2">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/staff.css') }}?v=3">
     <style>
         .status-approved { background: #1c1a07; color: #fbbf24; border: 1px solid #78350f; }
         .btn-collected {
@@ -41,11 +41,12 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>Admin Portal</h2>
+                <h2>Staff Portal</h2>
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="active" onclick="switchTab('roster', this)"><i data-lucide="users" class="icon"></i> Student Roster</a>
                 <a href="#" onclick="switchTab('requests', this)"><i data-lucide="clipboard-list" class="icon"></i> Borrow Requests <span id="requestBadge" class="badge" style="display:none; background:#ef4444; color:white; padding:2px 6px; border-radius:10px; font-size:10px;">0</span></a>
+                <a href="#" onclick="switchTab('returns', this)"><i data-lucide="rotate-ccw" class="icon"></i> Return Approvals <span id="returnBadge" class="badge" style="display:none; background:#ef4444; color:white; padding:2px 6px; border-radius:10px; font-size:10px;">0</span></a>
                 <a href="#" onclick="switchTab('books', this)"><i data-lucide="library" class="icon"></i> Books Catalogue</a>
                 <a href="#" id="logoutBtn" style="color: #787878;"><i data-lucide="log-out" class="icon"></i> Logout</a>
             </nav>
@@ -106,8 +107,35 @@
                 </div>
             </div>
 
+            <!-- Return Approvals Section -->
+            <div class="content-wrapper" id="returnsSection" style="display:none;">
+                <div class="card glass-card table-card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>TXID</th>
+                                <th>Student</th>
+                                <th>Book Title</th>
+                                <th>Borrowed On</th>
+                                <th>Returned On</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="returnsTableBody">
+                            <tr><td colspan="6" style="text-align:center;">Loading returns...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Books Catalogue Section -->
             <div class="content-wrapper" id="booksSection" style="display:none;">
+                <div class="search-container">
+                    <input type="text" id="bookSearchInput" class="search-input" placeholder="Search by title, author, or category...">
+                    <button class="btn btn-primary" id="openAddBookModalBtn" style="white-space:nowrap; display:flex; align-items:center;">
+                        <i data-lucide="plus-circle" style="width:18px;height:18px;margin-right:8px;"></i>Add New Book
+                    </button>
+                </div>
                 <div class="card glass-card table-card">
                     <table class="data-table">
                         <thead>
@@ -178,12 +206,55 @@
         </div>
     </div>
 
+    <!-- Add Book Modal -->
+    <div id="addBookModal" class="modal">
+        <div class="modal-content glass-card" style="width: 500px; max-width: 90vw;">
+            <span class="modal-close" id="addBookModalClose">&times;</span>
+            <h2 style="margin-bottom: 20px;">Add New Book to Library</h2>
+            <form id="addBookForm">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Book Title*</label>
+                        <input type="text" id="addBookTitle" required placeholder="e.g. Advanced Python Patterns">
+                    </div>
+                    <div class="form-group">
+                        <label>Author*</label>
+                        <input type="text" id="addBookAuthor" required placeholder="e.g. Jane Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>ISBN</label>
+                        <input type="text" id="addBookIsbn" placeholder="978-XXXXXXXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <input type="text" id="addBookCategory" placeholder="e.g. Programming">
+                    </div>
+                    <div class="form-group">
+                        <label>Publication Year</label>
+                        <input type="number" id="addBookYear" value="2024">
+                    </div>
+                    <div class="form-group">
+                        <label>Total Copies*</label>
+                        <input type="number" id="addBookCopies" min="1" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Shelf Location</label>
+                        <input type="text" id="addBookLocation" placeholder="Shelf A-01">
+                    </div>
+                </div>
+                <div style="display:flex; justify-content: flex-end; gap: 10px; margin-top: 25px;">
+                    <button type="submit" class="btn btn-primary">Add Book to Catalog</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Spinner -->
     <div id="loading" class="loading-overlay" style="display:none;">
         <div class="spinner"></div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/staff_dashboard.js') }}?v=3"></script>
+    <script src="{{ url_for('static', filename='js/staff_dashboard.js') }}?v=4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>lucide.createIcons();</script>
 </body>

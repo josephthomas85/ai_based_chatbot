@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify, session
 import json
 import bcrypt
+import random
 from datetime import datetime, timedelta
 from functools import wraps
 from config import Config
 from api.notifications import add_notification
+from api.books import count_active_borrows
 
 staff_bp = Blueprint('staff_api', __name__, url_prefix='/api/staff')
 
@@ -174,6 +176,56 @@ def get_book_details(bookid):
         "available_copies": book.get('availablecopies', 0)
     }), 200
 
+@staff_bp.route('/book/add', methods=['POST'])
+@require_staff_login
+def add_new_book():
+    """Adds a completely new book to the library catalog."""
+    data = request.get_json()
+    if not data or not data.get('title') or not data.get('author'):
+        return jsonify({"success": False, "message": "Missing required fields (Title and Author)"}), 400
+        
+    books_data = load_books()
+    
+    # Generate new book ID: BKXXXXX
+    # We find the maximum numeric ID currently in use and increment it.
+    max_id = 10  # Fallback starting point if none exist
+    for b in books_data['books']:
+        try:
+            bid = str(b['bookid'])
+            if bid.startswith('BK'):
+                num = int(bid[2:])
+                if num > max_id:
+                    max_id = num
+        except (ValueError, IndexError):
+            continue
+            
+    new_id_num = max_id + 1
+    new_bookid = f"BK{str(new_id_num).zfill(5)}"
+    
+    total_copies = int(data.get('totalcopies', 1))
+    
+    new_book = {
+        "bookid": new_bookid,
+        "title": data.get('title'),
+        "author": data.get('author'),
+        "isbn": data.get('isbn', ''),
+        "category": data.get('category', 'General'),
+        "publicationyear": int(data.get('publicationyear', datetime.now().year)),
+        "totalcopies": total_copies,
+        "availablecopies": total_copies,
+        "status": "available" if total_copies > 0 else "unavailable",
+        "location": data.get('location', 'Unassigned')
+    }
+    
+    books_data['books'].insert(0, new_book)  # Insert at top for visibility
+    save_books(books_data)
+    
+    return jsonify({
+        "success": True, 
+        "message": f"Successfully added '{new_book['title']}' with ID {new_bookid}",
+        "book": new_book
+    }), 201
+
 @staff_bp.route('/assign_book', methods=['POST'])
 @require_staff_login
 def assign_book():
@@ -194,7 +246,12 @@ def assign_book():
     if book['availablecopies'] == 0: return jsonify({"success": False, "message": "Book out of stock"}), 400
     
     tx_data = load_transactions()
-    transactionid = f"TRN{str(len(tx_data['transactions']) + 1).zfill(3)}"
+    
+    # Enforce 5-book limit
+    if count_active_borrows(userid, tx_data) >= 5:
+        return jsonify({"success": False, "message": f"User {userid} has already reached the limit of 5 books."}), 403
+    
+    transactionid = f"T{datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(100, 999)}"
     borrowdate = datetime.now().strftime('%Y-%m-%d')
     duedate = (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d')
     
@@ -255,19 +312,21 @@ def approve_request():
     tx_data = load_transactions()
     tx = next((t for t in tx_data['transactions'] if t['transactionid'] == txid), None)
     if not tx: return jsonify({"success": False, "message": "Request not found"}), 404
-    if tx['status'] not in ['requested', 'queued']:
+    if tx['status'] not in ['requested', 'queued', 'rejected']:
         return jsonify({"success": False, "message": f"Cannot approve a request with status '{tx['status']}'"}), 400
     
     books_data = load_books()
     book = next((b for b in books_data['books'] if b['bookid'] == tx['bookid']), None)
     
-    # If queued, try to allocate a copy now
-    if tx['status'] == 'queued':
-        if book and book['availablecopies'] > 0:
-            book['availablecopies'] -= 1
-            if book['availablecopies'] == 0: book['status'] = 'unavailable'
-        else:
-            return jsonify({"success": False, "message": "Book still out of stock — cannot approve yet"}), 400
+    # Always try to allocate a copy when approving (since borrow_book or rejection might have messed it up)
+    if book and book['availablecopies'] > 0:
+        book['availablecopies'] -= 1
+        if book['availablecopies'] == 0:
+            book['status'] = 'unavailable'
+        save_books(books_data)
+    else:
+        # If no copies available, we can't approve it for pickup right now
+        return jsonify({"success": False, "message": "Book is currently out of stock — cannot approve for pickup."}), 400
 
     pickup_deadline = next_working_day()
     tx['status'] = 'approved'
@@ -385,3 +444,76 @@ def expire_approvals():
 
     return jsonify({"success": True, "expired": expired_count,
                     "message": f"{expired_count} overdue approval(s) expired."}), 200
+@staff_bp.route('/returns', methods=['GET'])
+@require_staff_login
+def get_pending_returns():
+    tx_data = load_transactions()
+    books_data = load_books()
+    users_data = load_users()
+    
+    pending = []
+    for t in tx_data['transactions']:
+        if t['status'] == 'pending_return':
+            book = next((b for b in books_data['books'] if b['bookid'] == t['bookid']), {})
+            user = next((u for u in users_data['users'] if u['userid'] == t['userid']), {})
+            pending.append({
+                "transactionid": t['transactionid'],
+                "userid": t['userid'],
+                "fullname": user.get('fullname', 'Unknown'),
+                "bookid": t['bookid'],
+                "title": book.get('title', 'Unknown'),
+                "borrowdate": t.get('borrowdate', ''),
+                "returndate": t.get('returndate', ''),
+                "status": t['status']
+            })
+    
+    pending.sort(key=lambda x: x['transactionid'])
+    return jsonify({"success": True, "returns": pending}), 200
+
+@staff_bp.route('/return/approve', methods=['POST'])
+@require_staff_login
+def approve_return():
+    data = request.get_json()
+    txid = data.get('transactionid')
+    
+    tx_data = load_transactions()
+    tx = next((t for t in tx_data['transactions'] if t['transactionid'] == txid), None)
+    
+    if not tx:
+        return jsonify({"success": False, "message": "Transaction not found"}), 404
+    
+    if tx['status'] != 'pending_return':
+        return jsonify({"success": False, "message": "Transaction is not pending return"}), 400
+    
+    # Update transaction status
+    tx['status'] = 'returned'
+    
+    # Update book availability
+    books_data = load_books()
+    book = next((b for b in books_data['books'] if b['bookid'] == tx['bookid']), None)
+    
+    if book:
+        # Check for FIFO queue
+        queued_request = None
+        for t in tx_data['transactions']:
+            if t['bookid'] == tx['bookid'] and t['status'] == 'queued':
+                queued_request = t
+                break
+        
+        if queued_request:
+            # Automate next in line
+            queued_request['status'] = 'approved'
+            # Grant exactly 24 hours to pick up the book
+            queued_request['pickup_deadline'] = (datetime.now() + timedelta(hours=24)).strftime('%Y-%m-%d %H:%M:%S')
+            add_notification(queued_request['userid'], f"Good news! Your waitlisted book '{book['title']}' is now available and reserved for you. You have exactly 24 hours to collect it.")
+        else:
+            book['availablecopies'] += 1
+            book['status'] = 'available'
+        
+        save_books(books_data)
+    
+    save_transactions(tx_data)
+    
+    add_notification(tx['userid'], f"Your return request for '{book['title'] if book else tx['bookid']}' has been approved.")
+    
+    return jsonify({"success": True, "message": "Return approved successfully"}), 200

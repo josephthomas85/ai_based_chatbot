@@ -53,7 +53,7 @@
       "id": "NTF008",
       "userid": "USR020_STAFF",
       "message": "New borrow request for 'Mastering Svelte' by user USR027",
-      "read": false,
+      "read": true,
       "timestamp": "2026-03-23T12:44:47.196793"
     },
     {
@@ -88,28 +88,28 @@
       "id": "NTF013",
       "userid": "USR020_STAFF",
       "message": "New borrow request for 'Deep Dive into Rust' by user USR003",
-      "read": false,
+      "read": true,
       "timestamp": "2026-03-26T00:38:14.240010"
     },
     {
       "id": "NTF014",
       "userid": "USR020_STAFF",
       "message": "New borrow request for 'Ultimate Redis' by user USR033",
-      "read": false,
+      "read": true,
       "timestamp": "2026-03-26T01:28:44.481978"
     },
     {
       "id": "NTF015",
       "userid": "USR020_STAFF",
       "message": "New borrow request for 'Complete AWS' by user USR034",
-      "read": false,
+      "read": true,
       "timestamp": "2026-03-26T01:30:47.183032"
     },
     {
       "id": "NTF016",
       "userid": "USR020_STAFF",
       "message": "New borrow request for 'Complete AWS' by user USR035",
-      "read": false,
+      "read": true,
       "timestamp": "2026-03-26T01:34:27.317380"
     },
     {
@@ -130,7 +130,7 @@
       "id": "NTF019",
       "userid": "USR020_STAFF",
       "message": "New borrow request for 'Complete AWS' by user USR036",
-      "read": false,
+      "read": true,
       "timestamp": "2026-03-26T01:35:41.696034"
     },
     {
@@ -151,7 +151,7 @@
       "id": "NTF022",
       "userid": "USR020_STAFF",
       "message": "New borrow request for 'Complete AWS' by user USR037",
-      "read": false,
+      "read": true,
       "timestamp": "2026-03-26T01:36:06.965843"
     },
     {
@@ -172,7 +172,7 @@
       "id": "NTF025",
       "userid": "USR020_STAFF",
       "message": "New borrow request for 'Complete AWS' by user USR038",
-      "read": false,
+      "read": true,
       "timestamp": "2026-03-26T01:37:27.805719"
     },
     {
@@ -193,7 +193,7 @@
       "id": "NTF028",
       "userid": "USR020_STAFF",
       "message": "New borrow request for 'Ultimate Redis' by user USR039",
-      "read": false,
+      "read": true,
       "timestamp": "2026-03-26T01:38:38.444524"
     },
     {
@@ -214,7 +214,7 @@
       "id": "NTF031",
       "userid": "USR020_STAFF",
       "message": "New borrow request for 'Ultimate Redis' by user USR040",
-      "read": false,
+      "read": true,
       "timestamp": "2026-03-26T01:39:16.299251"
     },
     {
@@ -235,7 +235,7 @@
       "id": "NTF034",
       "userid": "USR020_STAFF",
       "message": "New borrow request for 'Ultimate Redis' by user USR041",
-      "read": false,
+      "read": true,
       "timestamp": "2026-03-26T01:40:29.433402"
     },
     {
@@ -265,6 +265,195 @@
       "message": "Book collected! 'Deep Dive into Rust' is now checked out to you. Due date: 2026-04-25.",
       "read": true,
       "timestamp": "2026-03-26T11:00:04.667335"
+    },
+    {
+      "id": "NTF039",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Modern Medical' by user USR048",
+      "read": true,
+      "timestamp": "2026-03-26T23:17:53.514845"
+    },
+    {
+      "id": "NTF040",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Mastering Rust' by user USR048",
+      "read": true,
+      "timestamp": "2026-03-26T23:17:56.028352"
+    },
+    {
+      "id": "NTF041",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'The Art of Vue' by user USR003",
+      "read": true,
+      "timestamp": "2026-03-26T23:22:35.012463"
+    },
+    {
+      "id": "NTF042",
+      "userid": "USR034",
+      "message": "Your request for 'Complete AWS' has been APPROVED! Please collect the book from the library by 2026-03-28. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-27T10:03:32.056518"
+    },
+    {
+      "id": "NTF043",
+      "userid": "USR034",
+      "message": "Book collected! 'Complete AWS' is now checked out to you. Due date: 2026-04-26.",
+      "read": false,
+      "timestamp": "2026-03-27T10:04:12.313457"
+    },
+    {
+      "id": "NTF044",
+      "userid": "USR034",
+      "message": "Your return request for 'Complete AWS' has been approved.",
+      "read": false,
+      "timestamp": "2026-03-27T10:05:09.301615"
+    },
+    {
+      "id": "NTF045",
+      "userid": "USR048",
+      "message": "Your request for 'Mastering Rust' has been APPROVED! Please collect the book from the library by 2026-03-28. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-27T10:06:39.998257"
+    },
+    {
+      "id": "NTF046",
+      "userid": "USR027",
+      "message": "Your request for 'Mastering Svelte' was declined.",
+      "read": false,
+      "timestamp": "2026-03-27T10:06:47.524196"
+    },
+    {
+      "id": "NTF047",
+      "userid": "USR003",
+      "message": "Your return request for 'Modern Nuxt' has been approved.",
+      "read": true,
+      "timestamp": "2026-03-27T10:07:55.607504"
+    },
+    {
+      "id": "NTF048",
+      "userid": "USR003",
+      "message": "Your request for 'The Art of Vue' has been APPROVED! Please collect the book from the library by 2026-03-28. Your request will be automatically cancelled if not collected by this date.",
+      "read": true,
+      "timestamp": "2026-03-27T14:08:19.786486"
+    },
+    {
+      "id": "NTF049",
+      "userid": "USR003",
+      "message": "Book collected! 'The Art of Vue' is now checked out to you. Due date: 2026-04-26.",
+      "read": true,
+      "timestamp": "2026-03-27T14:08:33.469793"
+    },
+    {
+      "id": "NTF050",
+      "userid": "USR003",
+      "message": "Your return request for 'Complete AWS' has been approved.",
+      "read": true,
+      "timestamp": "2026-03-29T01:49:04.620913"
+    },
+    {
+      "id": "NTF051",
+      "userid": "USR003",
+      "message": "Your return request for 'The Art of Vue' has been approved.",
+      "read": true,
+      "timestamp": "2026-03-29T01:49:08.741548"
+    },
+    {
+      "id": "NTF052",
+      "userid": "USR003",
+      "message": "Your return request for 'Introduction to Kubernetes' has been approved.",
+      "read": true,
+      "timestamp": "2026-03-29T01:49:13.343313"
+    },
+    {
+      "id": "NTF053",
+      "userid": "USR027",
+      "message": "Your request for 'Mastering Svelte' was declined.",
+      "read": false,
+      "timestamp": "2026-03-29T01:50:02.004350"
+    },
+    {
+      "id": "NTF054",
+      "userid": "USR027",
+      "message": "Your request for 'Mastering Svelte' was declined.",
+      "read": false,
+      "timestamp": "2026-03-29T01:50:07.677581"
+    },
+    {
+      "id": "NTF055",
+      "userid": "USR048",
+      "message": "Your request for 'Mastering Rust' was declined.",
+      "read": false,
+      "timestamp": "2026-03-29T01:50:10.558870"
+    },
+    {
+      "id": "NTF056",
+      "userid": "USR034",
+      "message": "Your request for 'Complete AWS' was declined.",
+      "read": false,
+      "timestamp": "2026-03-29T01:50:13.874382"
+    },
+    {
+      "id": "NTF057",
+      "userid": "USR001",
+      "message": "Your request for 'Book 1' has been APPROVED! Please collect the book from the library by 2026-03-30. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-29T19:12:35.109863"
+    },
+    {
+      "id": "NTF058",
+      "userid": "USR027",
+      "message": "Your request for 'Mastering Svelte' was declined.",
+      "read": false,
+      "timestamp": "2026-03-29T19:14:09.272604"
+    },
+    {
+      "id": "NTF059",
+      "userid": "USR027",
+      "message": "Your request for 'Mastering Svelte' was declined.",
+      "read": false,
+      "timestamp": "2026-03-29T19:14:13.125195"
+    },
+    {
+      "id": "NTF060",
+      "userid": "USR034",
+      "message": "Your request for 'Complete AWS' was declined.",
+      "read": false,
+      "timestamp": "2026-03-29T19:14:15.876803"
+    },
+    {
+      "id": "NTF061",
+      "userid": "USR027",
+      "message": "Your request for 'Mastering Svelte' has been APPROVED! Please collect the book from the library by 2026-03-30. Your request will be automatically cancelled if not collected by this date.",
+      "read": false,
+      "timestamp": "2026-03-29T19:14:27.878397"
+    },
+    {
+      "id": "NTF062",
+      "userid": "USR048",
+      "message": "Your request for 'Modern Medical' was declined.",
+      "read": false,
+      "timestamp": "2026-03-29T19:29:44.063378"
+    },
+    {
+      "id": "NTF063",
+      "userid": "USR003",
+      "message": "Your request for 'The Art of Flask' was declined.",
+      "read": false,
+      "timestamp": "2026-03-29T19:29:48.034150"
+    },
+    {
+      "id": "NTF064",
+      "userid": "USR020_STAFF",
+      "message": "New borrow request for 'Introduction to C#' by user USR003",
+      "read": true,
+      "timestamp": "2026-03-29T19:57:21.930063"
+    },
+    {
+      "id": "NTF065",
+      "userid": "USR003",
+      "message": "Your return request for 'Introduction to Kubernetes' has been approved.",
+      "read": false,
+      "timestamp": "2026-03-29T23:38:59.839164"
     }
   ],
   "watchers": [
@@ -317,6 +506,11 @@
       "userid": "USR003",
       "bookid": "BK00001",
       "requested_on": "2026-03-26T09:44:14.287733"
+    },
+    {
+      "userid": "USR003",
+      "bookid": "BK00017",
+      "requested_on": "2026-03-29T01:02:47.021404"
     }
   ]
 }

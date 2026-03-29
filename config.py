@@ -1,4 +1,8 @@
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 class Config:
     # Flask Configuration
@@ -24,3 +28,7 @@ class Config:
     # NLP Configuration
     NLP_MODEL = 'en_core_web_sm'
     MIN_CONFIDENCE = 0.5
+    
+    # AI / Groq Configuration
+    GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
+    AI_MODEL = os.environ.get('AI_MODEL') or 'llama-3.1-8b-instant'

@@ -31,6 +31,12 @@ def save_transactions(data):
     with open(Config.TRANSACTIONS_DB, 'w') as f:
         json.dump(data, f, indent=2)
 
+def count_active_borrows(userid, transactions_data):
+    """Count the number of books a user has currently borrowed, requested, or queued."""
+    active_statuses = ['borrowed', 'requested', 'queued', 'approved', 'pending_return']
+    return sum(1 for t in transactions_data['transactions'] 
+               if t['userid'] == userid and t['status'] in active_statuses)
+
 # GET /api/books
 @require_login
 def get_all_books():
@@ -95,6 +101,24 @@ def borrow_book():
     if not bookid:
         return jsonify({"success": False, "message": "Book ID required"}), 400
     
+    transactions_data = load_transactions()
+    
+    # Enforce 5-book limit
+    if count_active_borrows(userid, transactions_data) >= 5:
+        return jsonify({
+            "success": False, 
+            "message": "You have reached your limit of 5 books. Please return a book before taking another one."
+        }), 403
+    
+    # Prevent duplicate borrowing of the same book
+    active_statuses = ['borrowed', 'requested', 'queued', 'approved', 'pending_return']
+    for t in transactions_data['transactions']:
+        if t['userid'] == userid and t['bookid'] == bookid and t['status'] in active_statuses:
+            return jsonify({
+                "success": False,
+                "message": f"You already have an active request or a borrowed copy for this book ('{bookid}')."
+            }), 400
+    
     # Check if book exists and is available
     books_data = load_books()
     book = None
@@ -129,11 +153,9 @@ def borrow_book():
         "status": status
     }
     
-    # Update book availability if not queued
-    if status == "requested":
-        books_data['books'][book_index]['availablecopies'] -= 1
-        if books_data['books'][book_index]['availablecopies'] == 0:
-            books_data['books'][book_index]['status'] = 'unavailable'
+    # NOTE: Do NOT decrement availablecopies here.
+    # Copies are decremented only when staff approves the request
+    # (in /api/staff/request/approve). This prevents ghost reservations.
     
     # Save changes
     transactions_data['transactions'].append(transaction)
@@ -167,7 +189,7 @@ def return_book():
     transaction_index = None
     
     for i, t in enumerate(transactions_data['transactions']):
-        if t['userid'] == userid and t['bookid'] == bookid and t['status'] == 'borrowed':
+        if t['userid'] == userid and t['bookid'] == bookid and t['status'] in ['borrowed', 'approved']:
             transaction = t
             transaction_index = i
             break
@@ -178,7 +200,22 @@ def return_book():
     # Update transaction
     return_datetime = datetime.now()
     transactions_data['transactions'][transaction_index]['returndate'] = return_datetime.strftime('%Y-%m-%d')
-    transactions_data['transactions'][transaction_index]['status'] = 'returned'
+    
+    # If the book was already collected ('borrowed')
+    if transaction['status'] == 'borrowed':
+        transactions_data['transactions'][transaction_index]['status'] = 'pending_return' # Requires staff approval
+    else:
+        # If it was still 'approved' (not collected yet), we just cancel/reject it immediately
+        transactions_data['transactions'][transaction_index]['status'] = 'rejected'
+        
+        # Restore the book copy immediately
+        books_data = load_books()
+        book = next((b for b in books_data['books'] if b['bookid'] == bookid), None)
+        if book:
+            book['availablecopies'] += 1
+            if book['status'] == 'unavailable':
+                book['status'] = 'available'
+            save_books(books_data)
     
     # Check for late submission and calculate persistent fine
     due_date = datetime.strptime(transaction['duedate'], '%Y-%m-%d')
@@ -197,38 +234,14 @@ def return_book():
                     break
             save_users(users_data)
     
-    # Update book availability
-    books_data = load_books()
-    book_restored = False
-    for i, b in enumerate(books_data['books']):
-        if b['bookid'] == bookid:
-            # Check for FIFO queue
-            queued_request = None
-            for t in transactions_data['transactions']:
-                if t['bookid'] == bookid and t['status'] == 'queued':
-                    queued_request = t
-                    break
-            
-            if queued_request:
-                # Automate next in line (bypass manual staff approval)
-                queued_request['status'] = 'approved'
-                # Grant exactly 24 hours to pick up the book
-                queued_request['pickup_deadline'] = (datetime.now() + timedelta(hours=24)).strftime('%Y-%m-%d %H:%M:%S')
-                # Count stays reduced
-                add_notification(queued_request['userid'], f"Good news! Your waitlisted book '{b['title']}' is now available and reserved for you. You have exactly 24 hours to collect it from the librarian.")
-                notify_staff(f"FIFO Alert: '{b['title']}' has been automatically reserved for waitlisted user {queued_request['userid']} for 24 hours.")
-            else:
-                books_data['books'][i]['availablecopies'] += 1
-                books_data['books'][i]['status'] = 'available'
-            book_restored = True
-            break
+    # NOTE: Book availability is NOT updated here. 
+    # It will be updated by staff when they approve the return.
     
     save_transactions(transactions_data)
-    save_books(books_data)
     
-    msg = "Book returned successfully"
+    msg = "Return request submitted successfully. Awaiting staff approval."
     if fine_charged > 0:
-        msg += f". A late fine of ₹{fine_charged} has been added to your dues."
+        msg += f" A late fine of ₹{fine_charged} has been calculated."
     
     return jsonify({
         "success": True,
@@ -247,7 +260,7 @@ def get_user_borrowed_books(userid):
     # Get all borrowed books for user
     borrowed_books = []
     for t in transactions_data['transactions']:
-        if t['userid'] == userid and t['status'] in ['borrowed', 'requested', 'queued', 'approved']:
+        if t['userid'] == userid and t['status'] in ['borrowed', 'requested', 'queued', 'approved', 'pending_return']:
             # Find book details
             for b in books_data['books']:
                 if b['bookid'] == t['bookid']:
@@ -257,6 +270,7 @@ def get_user_borrowed_books(userid):
                         "author": b['author'],
                         "borrowdate": t.get('borrowdate', ''),
                         "duedate": t.get('duedate', ''),
+                        "returndate": t.get('returndate', ''),
                         "status": t['status'],
                         "pickup_deadline": t.get('pickup_deadline', '')
                     })
