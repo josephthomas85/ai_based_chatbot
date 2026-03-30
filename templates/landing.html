@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System - Welcome</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}?v=1">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <i data-lucide="library" class="icon"></i>
+            <span>Library</span>
+        </div>
+        <nav class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#about">About</a>
+        </nav>
+        <div class="nav-actions" style="display: flex; gap: 10px;">
+            {% if userid %}
+                <a href="{{ url_for('home') }}" class="btn btn-primary">Go to Dashboard</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Student Login</a>
+                <a href="{{ url_for('staff_login_page') }}" class="btn btn-secondary" style="border: 1px solid var(--accent); color: var(--accent);">Staff Portal</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1>Next-Gen Library Experience, Powered by AI.</h1>
+                <p>Manage your books, get smart recommendations, and solve issues instantly through our intelligent library chatbot. Welcome to the future of reading.</p>
+                <div class="hero-buttons">
+                    {% if userid %}
+                        <a href="{{ url_for('home') }}" class="btn btn-primary btn-large">Enter Dashboard</a>
+                        <a href="#features" class="btn btn-secondary btn-large">Explore Features</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">Student Login / Register</a>
+                        <a href="{{ url_for('staff_login_page') }}" class="btn btn-secondary btn-large" style="border: 2px solid var(--accent); color: var(--accent); display: flex; align-items: center; gap: 8px;"><i data-lucide="shield-check" style="width: 1.2rem; height: 1.2rem;"></i> Staff Area</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="glass-card mockup-card">
+                    <div class="mockup-header">Library Chatbot</div>
+                    <div class="mockup-messages">
+                        <div class="msg bot">Hello! I'm your library assistant. What can I help you find today?</div>
+                        <div class="msg user">Do you have books on Python?</div>
+                        <div class="msg bot">Yes! We have 3 copies available. Would you like to borrow one?</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="section-title">
+                <h2>Why Choose Library?</h2>
+                <p>A smart suite of tools designed to make reading and borrowing completely seamless.</p>
+            </div>
+            <div class="features-grid">
+                <div class="glass-card feature-card">
+                    <div class="feature-icon"><i data-lucide="message-square"></i></div>
+                    <h3>AI Chatbot</h3>
+                    <p>Borrow, return, and search books purely through natural language conversations with our smart assistant.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="feature-icon"><i data-lucide="sparkles"></i></div>
+                    <h3>Smart Recommendations</h3>
+                    <p>Discover your next great read with AI algorithms tailored to your borrowing history.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="feature-icon"><i data-lucide="bell"></i></div>
+                    <h3>Instant Notifications</h3>
+                    <p>Stay ahead of due dates and incoming stock with a live, real-time alert system right on your dashboard.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about" id="about">
+            <div class="about-container glass-card">
+                <div class="about-content">
+                    <h2>About The Project</h2>
+                    <p>This AI-based Library Management System bridges the gap between traditional libraries and modern digital convenience. Our mission is to reduce overhead, eliminate physical library lines, and make books universally accessible through smart search technologies and beautiful user interfaces.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 AI Library Management System. Crafted with precision.</p>
+        </div>
+    </footer>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

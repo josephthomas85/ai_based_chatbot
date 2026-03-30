@@ -1,0 +1,499 @@
+{
+  "users": [
+    {
+      "userid": "USR001",
+      "username": "arjun",
+      "password": "$2b$12$E//8gGMaA71LyyPGMulYreB6cHWRf.74.OOSs0SGTSYuQfmKLQV7W",
+      "fullname": "ARJUN R",
+      "email": "",
+      "registereddate": "2026-03-17",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR002",
+      "username": "joss",
+      "password": "$2b$12$s/obJhYh9cO/B/qbgJuLD.5DX7fseJ1Fbbf8h.pphJh/s9RDqrlbu",
+      "fullname": "jozu",
+      "email": "",
+      "registereddate": "2026-03-17",
+      "borrowedbooks": [],
+      "unpaid_fines": 59,
+      "role": "student"
+    },
+    {
+      "userid": "USR003",
+      "username": "jozu",
+      "password": "$2b$12$BGgrLe5Woohtrxmi8K53zeWEFwWabn.trmuU1qitEBdbIbehbM8D6",
+      "fullname": "joseph",
+      "email": "",
+      "registereddate": "2026-03-17",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student",
+      "profile_photo": "/static/uploads/profiles/USR003_avatar.jpg"
+    },
+    {
+      "userid": "USR004",
+      "username": "testuser888",
+      "password": "$2b$12$07GzQAMgA.uwm/ADZjuPZOsTQbKshC5Po7dXIgPrOA.2ankC4pBhq",
+      "fullname": "Test User",
+      "email": "",
+      "registereddate": "",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR005",
+      "username": "rahuls",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Rahul Sharma",
+      "email": "rahul@example.com",
+      "registereddate": "2025-10-12",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR006",
+      "username": "sophiet",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Sophie Turner",
+      "email": "sophie@example.com",
+      "registereddate": "2025-12-26",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR007",
+      "username": "aaravp",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Aarav Patel",
+      "email": "aarav@example.com",
+      "registereddate": "2026-01-15",
+      "borrowedbooks": [],
+      "unpaid_fines": 8,
+      "role": "student"
+    },
+    {
+      "userid": "USR008",
+      "username": "meghanf",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Meghan Fox",
+      "email": "meghan@example.com",
+      "registereddate": "2026-01-21",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR009",
+      "username": "johns",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "John Smith",
+      "email": "john@example.com",
+      "registereddate": "2025-11-27",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR010",
+      "username": "davidl",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "David Lee",
+      "email": "david@example.com",
+      "registereddate": "2026-01-02",
+      "borrowedbooks": [],
+      "unpaid_fines": 6,
+      "role": "student"
+    },
+    {
+      "userid": "USR011",
+      "username": "sanjayk",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Sanjay Kumar",
+      "email": "sanjay@example.com",
+      "registereddate": "2026-01-06",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR012",
+      "username": "liz",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Li Zhang",
+      "email": "li@example.com",
+      "registereddate": "2025-11-13",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR013",
+      "username": "priyas",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Priya Singh",
+      "email": "priya@example.com",
+      "registereddate": "2025-10-16",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR014",
+      "username": "carlosg",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Carlos Garcia",
+      "email": "carlos@example.com",
+      "registereddate": "2025-10-12",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR015",
+      "username": "aishat",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Aisha Tariq",
+      "email": "aisha@example.com",
+      "registereddate": "2025-10-25",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR016",
+      "username": "weic",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Wei Chen",
+      "email": "wei@example.com",
+      "registereddate": "2025-11-10",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR017",
+      "username": "chloed",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Chloe Davis",
+      "email": "chloe@example.com",
+      "registereddate": "2025-12-24",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR018",
+      "username": "emmaw",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Emma White",
+      "email": "emma@example.com",
+      "registereddate": "2026-01-19",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR019",
+      "username": "oliverb",
+      "password": "$2b$12$DSLReqR3EN6nZqJF9Lov5OOQgfSIkR.WfuzNQQVbE1Wp2b.6cVVcu",
+      "fullname": "Oliver Brown",
+      "email": "oliver@example.com",
+      "registereddate": "2025-12-25",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "student"
+    },
+    {
+      "userid": "USR020_STAFF",
+      "username": "admin",
+      "password": "$2b$12$Xl6VsJiA96bNJ78S7SH.4eCaT8EHQRmLJ4YlTS0u/ryvoYvESSy3O",
+      "fullname": "Library Administrator",
+      "email": "admin@library.com",
+      "registereddate": "2026-01-01",
+      "borrowedbooks": [],
+      "unpaid_fines": 0,
+      "role": "staff"
+    },
+    {
+      "userid": "USR021",
+      "username": "testuser",
+      "password": "$2b$12$vNHNm9ibN8kMMUKmtSITNeMTOmjWz//7.Au9VU8HXOuP5u.7gK0pC",
+      "fullname": "Test User",
+      "email": "",
+      "registereddate": "2026-03-20",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR022",
+      "username": "USR001",
+      "password": "$2b$12$k4qcPvtryB74HZfH0DFkpOzHCV8xurN/.c3hX2VpU.WTj63svxRMK",
+      "fullname": "USR001",
+      "email": "",
+      "registereddate": "2026-03-21",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR023",
+      "username": "testuser2",
+      "password": "$2b$12$t1s/eHKWxZarVsh11j7.juPb2HZoX3sj.LzUUEotYaaWMx2/wIf1m",
+      "fullname": "Test User 2",
+      "email": "",
+      "registereddate": "2026-03-21",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR024",
+      "username": "robot123",
+      "password": "$2b$12$XdjoCgoFqJleTpwGE1ciF.ZSruqQ/S.NiwG1BIzTt6Jjbwq9waKXO",
+      "fullname": "Robot One",
+      "email": "",
+      "registereddate": "2026-03-21",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR025",
+      "username": "testuser123",
+      "password": "$2b$12$5DWEWOS7nsP5pKesCaAh0ug54p9A9DXtxiebmiQLCsoxBi31febKi",
+      "fullname": "Tester",
+      "email": "",
+      "registereddate": "2026-03-21",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR026",
+      "username": "usr001",
+      "password": "$2b$12$tz0WohNV8sU6KYzxPPt3Ee5xsjEtehlDENDdHnfgyTUAgiV6tuTiu",
+      "fullname": "Test User",
+      "email": "",
+      "registereddate": "2026-03-21",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR027",
+      "username": "muthu03",
+      "password": "$2b$12$dbNyQrTk3qk94CVcKwMKhuyDicBeKvrF/E8ERU8aFiPRnrJnbluuC",
+      "fullname": "aswin",
+      "email": "muthu03@gmail.com",
+      "registereddate": "2026-03-23",
+      "borrowedbooks": [],
+      "profile_photo": "/static/uploads/profiles/USR027_avatar.JPG",
+      "phone": "7907661407",
+      "unpaid_fines": 10000
+    },
+    {
+      "userid": "USR028",
+      "username": "testuser_1774468324",
+      "password": "$2b$12$rEbVz08bimpKGl0FIDyLgu9if9KBmdqweP2vP7uUA.AYW5VMCOuWq",
+      "fullname": "Test Student E2E",
+      "email": "testuser_1774468324@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR029",
+      "username": "testuser_1774468472",
+      "password": "$2b$12$05Bxz/8GUvNL7YATY/.CMeMFaVZz4aOSP8xBkWwGFIQy98wkDyUp2",
+      "fullname": "Test Student E2E",
+      "email": "testuser_1774468472@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR030",
+      "username": "testuser_1774468498",
+      "password": "$2b$12$hEuRJ0BOkRmUBdcfbULmw.miDniBYuYGPe/kYXuH5rejFImNBdd0.",
+      "fullname": "Test Student E2E",
+      "email": "testuser_1774468498@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR031",
+      "username": "testuser_1774468591",
+      "password": "$2b$12$JDCvjBeJZyuHBwN5OwylTOeJDXDLqeBO4aYWPV9p9GoMyV9MWdpDK",
+      "fullname": "Test Student E2E",
+      "email": "testuser_1774468591@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR032",
+      "username": "testuser_1774468656",
+      "password": "$2b$12$XtMKgLHhSCe.H4IYKTcbKONHJ7x1mHNjvuSJBN3cwNc1uP2XE8KGq",
+      "fullname": "Test Student E2E",
+      "email": "testuser_1774468656@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR033",
+      "username": "testuser_1774468723",
+      "password": "$2b$12$m1lvJkGbHypPKCTW.76IcuFRTdAGgMQOToHlP7/vw7jK0NkLtgz/.",
+      "fullname": "Test Student E2E",
+      "email": "testuser_1774468723@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR034",
+      "username": "testuser_1774468846",
+      "password": "$2b$12$vkCRF8jn68Cdu1zdyYZt8O9id6VKJwQZQuzlTgtipvJJz/0wgwOPe",
+      "fullname": "Test Student E2E",
+      "email": "testuser_1774468846@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR035",
+      "username": "testuser_1774469066",
+      "password": "$2b$12$HCKznNI9zSiN6qE/wL5t9udimUQ/6vhXNYJ2aNX/SU2ZNNg9b1yeK",
+      "fullname": "Test Student E2E",
+      "email": "testuser_1774469066@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR036",
+      "username": "testuser_1774469140",
+      "password": "$2b$12$CJn1wMn0SYf7ZltraLWkDO99IUh64JLBRgRLD4ma0KwYfwifdUsYe",
+      "fullname": "Test Student UPDATED",
+      "email": "testuser_1774469140_updated@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR037",
+      "username": "testuser_1774469165",
+      "password": "$2b$12$2PhYjPW3lhIJFcT7SC7HJ.wsh9DqKNAsfCO2Ub2eJ7ZvDuIkxd1iG",
+      "fullname": "Test Student UPDATED",
+      "email": "testuser_1774469165_updated@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR038",
+      "username": "testuser_1774469246",
+      "password": "$2b$12$0gwga/Zqwkx5b20plSzIau4pz/kZ6kKsH8oeQYNCOVmyYsE2DON1.",
+      "fullname": "Test Student UPDATED",
+      "email": "testuser_1774469246_updated@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR039",
+      "username": "testuser_1774469317",
+      "password": "$2b$12$hoCJgp4kJl.IrBRKtTM0i.nPL3hEXbCo2mU9EyBuOndo03k80ptYq",
+      "fullname": "Test Student UPDATED",
+      "email": "testuser_1774469317_updated@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR040",
+      "username": "testuser_1774469355",
+      "password": "$2b$12$2D1ZZYlZsZHvlVQ5RP9bie/S0mUSxj2elMrXpWJ7GAb.hy6wd5MH6",
+      "fullname": "Test Student UPDATED",
+      "email": "testuser_1774469355_updated@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR041",
+      "username": "testuser_1774469428",
+      "password": "$2b$12$LmnLiAVr5mWJKJoVQKq7fuuZTe2IFVupRpb/fnNO39eVpnJ1jvP8y",
+      "fullname": "Test Student UPDATED",
+      "email": "testuser_1774469428_updated@test.com",
+      "registereddate": "",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR042",
+      "username": "arjunr",
+      "password": "$2b$12$6XI1iA3ZVhdgKAxhXmAkMew/N.2EKpVNBwm1vIh85ZBI/xd6n3Nni",
+      "fullname": "Arjun R",
+      "email": "",
+      "registereddate": "2026-03-25",
+      "borrowedbooks": [],
+      "unpaid_fines": 0
+    },
+    {
+      "userid": "USR043",
+      "username": "tester123usr001",
+      "password": "$2b$12$AtWGMvYf25bnCDd2ZyYCvOIu40UXSYwaeoqhsCUYn5b1uJ4IpISjS",
+      "fullname": "Test User",
+      "email": "test@example.com",
+      "registereddate": "2026-03-26",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR044",
+      "username": "admintest_bot_user",
+      "password": "$2b$12$3HxhkVWaN6io3WPp/xf3LuL0czJDF/Wtac2dOkjutAX9tIpT2xDtK",
+      "fullname": "Test Bot",
+      "email": "testbot@example.com",
+      "registereddate": "2026-03-26",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR045",
+      "username": "tester123",
+      "password": "$2b$12$2xA0j5Zenr0K49z2hnQSbOBD3br7IHXtNHuH1oyw./UYwNdxLJcJ.",
+      "fullname": "Test UserTester User",
+      "email": "tester123@example.com",
+      "registereddate": "2026-03-26",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR046",
+      "username": "tester_unique_12345",
+      "password": "$2b$12$S4Zwq8WkXNqHgM2RTPEI9uspDSRZCSsoKz6d6Zyq/sWkmAKrfCo8y",
+      "fullname": "Unique Tester",
+      "email": "unique@example.com",
+      "registereddate": "2026-03-26",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR047",
+      "username": "Password123!",
+      "password": "$2b$12$nv0oSYtDES4CFqJvcHO.K.4Ir43go19cGSJS38jKOVCEX/hEXqPxm",
+      "fullname": "supertester99999",
+      "email": "",
+      "registereddate": "2026-03-26",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR048",
+      "username": "final_tester_999",
+      "password": "$2b$12$hUIxc/5DzZGPImuimWoaGubshh9M58wo0/Gxk1ebc.yNY7xYqWSnu",
+      "fullname": "Final Tester",
+      "email": "final@example.com",
+      "registereddate": "2026-03-26",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR049",
+      "username": "verifystudent",
+      "password": "$2b$12$t.GC2o95nWWhhJlJ8m0Gt.FlcxTDQsXFUyhP1p9bVfRZwLGxJ.se.",
+      "fullname": "Verification Student",
+      "email": "verify@example.com",
+      "registereddate": "2026-03-26",
+      "borrowedbooks": []
+    },
+    {
+      "userid": "USR050",
+      "username": "abc",
+      "password": "$2b$12$Va0CUTyG4IYGHOsM/G.eLepSlBdsUjUGC076kOxqiAUI4jzwfDo76",
+      "fullname": "abc",
+      "email": "",
+      "registereddate": "2026-03-27",
+      "borrowedbooks": []
+    }
+  ]
+}

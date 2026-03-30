@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Staff Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/staff.css') }}?v=1">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">
+                <i data-lucide="shield-check" class="icon"></i>
+                <span>Staff Portal</span>
+            </div>
+            <p>Authorized Staff Only</p>
+        </div>
+        
+        <form id="staffLoginForm" class="login-form">
+            <div class="form-group">
+                <label>Staff Username</label>
+                <input type="text" id="username" placeholder="Enter staff username" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+            </div>
+            <div id="errorMessage" class="error-message"></div>
+            <button type="submit" class="btn btn-primary w-100">Log In to Portal</button>
+        </form>
+        
+        <div style="margin-top: 2rem; text-align: center;">
+            <a href="{{ url_for('index') }}" style="color: var(--text-muted); text-decoration: none;">&larr; Return to Public Site</a>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/staff_login.js') }}?v=1"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <h1><i data-lucide="library"></i> Library Management System</h1>
+            </div>
+            <div class="navbar-right">
+                <a href="{{ url_for('notifications_page') }}" class="btn-notification" title="Notifications">
+                    <i data-lucide="bell"></i> <span id="notificationCount" class="badge"></span>
+                </a>
+                <span id="userName" class="user-info"></span>
+                <button id="logoutBtn" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="wrapper">
+        <!-- Sidebar navigation like screenshot -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>Library<br><span>Student Portal</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#" class="active"><i data-lucide="layout-dashboard" class="icon"></i>Dashboard</a></li>
+                    <li><a href="{{ url_for('recommendations_page') }}"><i data-lucide="sparkles" class="icon"></i>AI Recommendations</a></li>
+                    <li><a href="{{ url_for('chatbot_page') }}"><i data-lucide="message-square" class="icon"></i>Library Chatbot</a></li>
+                    <li><a href="{{ url_for('mybooks_page') }}"><i data-lucide="book-open" class="icon"></i>My Books</a></li>
+                    <li><a href="{{ url_for('history') }}"><i data-lucide="history" class="icon"></i>History</a></li>
+                
+                    <li><a href="{{ url_for('profile_page') }}"><i data-lucide="user" class="icon"></i>My Profile</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="avatar">SU</div>
+                <div class="sidebar-userinfo">
+                    {{ fullname }}<br>
+                    <small>{{ username }}</small>
+                </div>
+                <button id="sidebarLogoutBtn" class="btn-logout">Logout</button>
+            </div>
+        </aside>
+        
+        <!-- Main content area -->
+        <main class="main-content">
+            <div id="dashboardView">
+                <div class="dashboard-header">
+                    <h1>Welcome back, {{ fullname or 'Student' }}!</h1>
+                    <p class="dashboard-subtitle">Here's your library overview and recent activity</p>
+                </div>
+                <section class="dashboard-cards">
+                <div class="card">
+                    <div class="card-icon"><i data-lucide="book-open"></i></div>
+                    <div class="card-info">
+                        <h3 id="cardBooksIssued">0</h3>
+                        <p>Books Issued</p>
+                        <small class="card-meta">1 Active</small>
+                    </div>
+                </div>
+                <div class="card" onclick="window.location.href='/overdue'" style="cursor: pointer;">
+                    <div class="card-icon"><i data-lucide="calendar-off"></i></div>
+                    <div class="card-info">
+                        <h3 id="cardOverdue">0</h3>
+                        <p>Overdue Books</p>
+                        <small class="card-meta">1 Due Soon</small>
+                    </div>
+                </div>
+                <div class="card" id="feeCard" style="cursor: pointer;">
+                    <div class="card-icon"><i data-lucide="credit-card"></i></div>
+                    <div class="card-info">
+                        <h3 id="cardFees">₹0</h3>
+                        <p>Current Late Fee</p>
+                        <small class="card-meta">Tap for details</small>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i data-lucide="bell"></i></div>
+                    <div class="card-info">
+                        <h3 id="cardAlerts">0</h3>
+                        <p>Unread Alerts</p>
+                        <small class="card-meta">0 Total</small>
+                    </div>
+                </div>
+            </section>
+
+            <section class="issued-books">
+                <h2>Currently Issued Books</h2>
+                <div id="issuedList">
+                    <!-- issued books will be populated by JS or server -->
+                </div>
+            </section>
+
+            <aside class="recent-alerts">
+                <h2>Recent Alerts</h2>
+                <div id="alertsList">
+                    <!-- alerts go here -->
+                </div>
+            </aside>
+            </div> <!-- end dashboardView -->
+
+            <!-- chat view hidden by default -->
+            <div id="chatView" style="display:none;">
+                <div class="chat-header">
+                    <h2><i data-lucide="bot"></i> Library Assistant</h2>
+                    <p class="chat-subtitle">Ask me about books, borrowing, or anything library related</p>
+                </div>
+                <div id="chatMessages" class="chat-messages">
+                    <div class="message bot-message">
+                        <p><i data-lucide="smile"></i> Hello! I'm your Library Assistant. I can help you:</p>
+                        <ul>
+                            <li>Search for books</li>
+                            <li>Check book availability</li>
+                            <li>Borrow and return books</li>
+                            <li>View your borrowed books</li>
+                        </ul>
+                        <p>What would you like to do?</p>
+                    </div>
+                </div>
+                <div class="chat-input-section">
+                    <div class="chat-input-container">
+                        <input 
+                            type="text" 
+                            id="chatInput" 
+                            class="chat-input" 
+                            placeholder="Ask me about books"
+                            autocomplete="off">
+                        <button id="sendBtn" class="btn-send">Send</button>
+                    </div>
+                    <p class="chat-hint">Press Enter to send message</p>
+                </div>
+            </div> <!-- end chatView -->
+
+            <!-- my books view -->
+            <div id="myBooksView" style="display:none; padding:20px;">
+                <h2>Your Borrowed Books</h2>
+                <div id="myBooksList">
+                    <p>Loading...</p>
+                </div>
+            </div>
+
+            <!-- ai recommendations view -->
+            <div id="aiView" style="display:none; padding:20px;">
+                <h2>AI Recommendations</h2>
+                <div id="aiList">
+                    <p>Loading recommendations...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal for borrowing/returning books -->
+    <div id="bookModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 id="modalTitle">Select a Book</h2>
+            <div id="booksList" class="books-list"></div>
+            <button id="modalAction" class="btn-action">Confirm</button>
+        </div>
+    </div>
+
+    <!-- Modal for late fee details -->
+    <div id="feeModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="feeModalClose">&times;</span>
+            <h2>Late Fee Details</h2>
+            <div id="feeDetails">
+                <p>Loading details...</p>
+            </div>
+            <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button id="feeModalPayBtn" class="btn-action" style="background: #7c7c7c; display: none;">Pay Fines</button>
+                <button id="feeModalCloseBtn" class="btn-action" style="background: #787878;">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/home.js') }}?v=4"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

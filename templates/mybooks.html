@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Books - Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <style>
+        .mybooks-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 40px;
+        }
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+        .book-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .book-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #323232;
+        }
+        .book-author {
+            color: #646464;
+            margin-bottom: 8px;
+        }
+        .book-details {
+            color: #888888;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .return-btn {
+            background: #676767;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .return-btn:hover {
+            background: #565656;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-overdue {
+            background: #676767;
+            color: white;
+        }
+        .status-due-soon {
+            background: #bdbdbd;
+            color: #242424;
+        }
+        .status-normal {
+            background: #757575;
+            color: white;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #646464;
+        }
+        .no-books {
+            text-align: center;
+            padding: 40px;
+            color: #646464;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <h1><i data-lucide="book-open"></i> My Books</h1>
+            </div>
+            <div class="navbar-right">
+                <a href="{{ url_for('notifications_page') }}" id="notificationBtn" class="btn-notification" title="Notifications">
+                    <i data-lucide="bell"></i> <span id="notificationCount" class="badge"></span>
+                </a>
+                <span id="userName" class="user-info"></span>
+                <button id="logoutBtn" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="mybooks-container">
+        <h2>Your Borrowed Books</h2>
+        <p>Here are the books you currently have borrowed:</p>
+
+        <div id="booksGrid" class="books-grid">
+            <div class="loading">Loading your books...</div>
+        </div>
+    </div>
+
+    <!-- Loading spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // Set user data from template
+        localStorage.setItem('userid', '{{ userid }}');
+        localStorage.setItem('username', '{{ username }}');
+        localStorage.setItem('fullname', '{{ fullname }}');
+    </script>
+    <script src="{{ url_for('static', filename='js/mybooks.js') }}"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

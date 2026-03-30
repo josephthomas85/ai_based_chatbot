@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}?v=4">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}?v=1">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <h1><i data-lucide="library"></i> Library</h1>
+            </div>
+            <div class="navbar-right">
+                <span class="user-info">Welcome, {{ fullname }}</span>
+                <a href="/home" class="btn-logout" style="text-decoration:none; display:inline-block;">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>LMS <span>AI</span></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/home"><i data-lucide="layout-dashboard" class="icon"></i> Dashboard</a></li>
+                    <li><a href="/mybooks"><i data-lucide="book-open" class="icon"></i> My Books</a></li>
+                    <li><a href="/recommendations"><i data-lucide="sparkles" class="icon"></i> Recommendations</a></li>
+                    <li><a href="/history"><i data-lucide="history" class="icon"></i> History</a></li>
+                    <li><a href="/overdue"><i data-lucide="alert-circle" class="icon"></i> Overdue</a></li>
+                    <li><a href="/profile" class="active"><i data-lucide="user" class="icon"></i> My Profile</a></li>
+                
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <h1>My Profile</h1>
+                <p class="dashboard-subtitle">Manage your personal information and photo</p>
+            </header>
+
+            <div class="profile-container">
+                <!-- Left Column -->
+                <div class="left-col" style="display:flex; flex-direction:column; gap:30px; flex:1;">
+                    <!-- Avatar Upload Section -->
+                    <div class="avatar-card card">
+                        <div class="avatar-wrapper" id="avatarWrapper">
+                            <img id="profileImage" src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="Profile Photo">
+                            <div class="avatar-overlay">
+                                <span><i data-lucide="camera" style="width:16px; height:16px; vertical-align:middle;"></i> Change</span>
+                            </div>
+                        </div>
+                        <form id="photoUploadForm" style="display:none;">
+                            <input type="file" id="photoInput" accept="image/*">
+                        </form>
+                        <h3 id="displayFullname">Loading...</h3>
+                        <p id="displayUsername" style="color: #656565;">@loading</p>
+                        
+                        <button id="savePhotoBtn" class="btn-action" style="display:none; margin-top:20px; background:#000000;">Save New Photo</button>
+                    </div>
+
+                    <!-- Fines Card -->
+                    <div class="fines-card card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align:center; padding: 30px;">
+                        <div style="background:#fef2f2; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;">
+                            <i data-lucide="credit-card" style="color:#ef4444; width:24px; height:24px;"></i>
+                        </div>
+                        <h3 style="margin-bottom:10px;">Missing Books Fee</h3>
+                        {% if unpaid_fines and unpaid_fines > 0 %}
+                            <h1 style="color:#ef4444; font-size:36px; margin-bottom:10px;">${{ "%.2f"|format(unpaid_fines) }}</h1>
+                            <p style="color:#656565; font-size:14px; margin-bottom:20px;">You have an overdue balance. Please pay to continue borrowing items.</p>
+                            <button id="payFinesBtn" class="btn-action" style="width:100%; background:#ef4444; color:white;">Pay Now</button>
+                        {% else %}
+                            <h1 style="color:#10b981; font-size:36px; margin-bottom:10px;">$0.00</h1>
+                            <p style="color:#656565; font-size:14px;">Your account is in good standing.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Profile Details Form -->
+                <div class="details-card card" style="flex: 2; align-items:flex-start; flex-direction:column;">
+                    <h2 style="margin-bottom: 20px;">Personal Details</h2>
+                    <form id="profileForm" style="width: 100%;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="fullname" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" id="username" class="form-input" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="email" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="phone" class="form-input" placeholder="+1 234 567 8900">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Registered Date</label>
+                            <input type="text" id="registereddate" class="form-input" disabled style="background:#eeeeee;">
+                        </div>
+
+                        <div id="profileMessage" style="margin: 15px 0;"></div>
+                        <button type="submit" class="btn-action" id="saveProfileBtn">Save Profile Changes</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/profile.js') }}?v=1"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const payFinesBtn = document.getElementById('payFinesBtn');
+            if(payFinesBtn) {
+                payFinesBtn.addEventListener('click', async () => {
+                    payFinesBtn.textContent = "Processing...";
+                    payFinesBtn.disabled = true;
+                    try {
+                        const res = await fetch('/api/pay_fines', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            alert("Payment Successful!");
+                            window.location.reload();
+                        } else {
+                            alert(data.message || "Payment Failed.");
+                            payFinesBtn.textContent = "Pay Now";
+                            payFinesBtn.disabled = false;
+                        }
+                    } catch (err) {
+                        alert("Error processing payment.");
+                        payFinesBtn.textContent = "Pay Now";
+                        payFinesBtn.disabled = false;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
